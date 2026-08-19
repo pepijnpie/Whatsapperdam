@@ -7,11 +7,12 @@
     <style>
         :root {
             --bg-dark: #0a0c10;
-            --panel-bg: rgba(22, 27, 34, 0.9);
+            --panel-bg: rgba(22, 27, 34, 0.95);
             --border-gold: #c9a050;
             --text-main: #e6edf3;
             --text-muted: #8b949e;
             --accent-red: #8b0000;
+            --accent-green: #2ea043;
         }
 
         body {
@@ -21,12 +22,13 @@
             color: var(--text-main);
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden; /* Voorkomt scrollen op de hoofdpagina */
         }
 
         .overlay {
             background: rgba(10, 12, 16, 0.85);
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
         }
@@ -34,14 +36,15 @@
         header {
             background: rgba(15, 15, 20, 0.95);
             border-bottom: 2px solid var(--border-gold);
-            padding: 20px;
+            padding: 15px 20px;
             text-align: center;
             box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            flex-shrink: 0;
         }
 
         header h1 {
             margin: 0;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             letter-spacing: 3px;
             color: var(--border-gold);
             text-transform: uppercase;
@@ -52,17 +55,16 @@
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
+            margin-top: 10px;
         }
 
         .tab-btn {
             background: #1a1e24;
             color: var(--text-main);
             border: 1px solid var(--border-gold);
-            padding: 10px 20px;
+            padding: 8px 16px;
             font-family: inherit;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s ease;
             border-radius: 4px;
@@ -76,11 +78,12 @@
 
         main {
             flex-grow: 1;
-            padding: 20px;
-            max-width: 1200px;
+            padding: 15px;
+            max-width: 1400px;
             margin: 0 auto;
             width: 100%;
             box-sizing: border-box;
+            height: calc(100vh - 110px);
         }
 
         .tab-content {
@@ -88,85 +91,151 @@
             background: var(--panel-bg);
             border: 1px solid rgba(201, 160, 80, 0.3);
             border-radius: 8px;
-            padding: 25px;
+            padding: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            height: 100%;
+            box-sizing: border-box;
         }
 
         .tab-content.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Courant Styles */
+        /* --- COURANT TAB --- */
         .courant-controls {
             display: flex;
             gap: 15px;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             background: rgba(0,0,0,0.4);
-            padding: 12px 18px;
+            padding: 8px 15px;
             border-radius: 6px;
             border: 1px solid #333;
+            flex-shrink: 0;
         }
 
         select, input {
             background: #12151a;
             color: var(--border-gold);
             border: 1px solid var(--border-gold);
-            padding: 8px 12px;
+            padding: 6px 10px;
             font-family: inherit;
             border-radius: 4px;
         }
 
         .courant-frame {
             width: 100%;
-            height: 75vh;
+            flex-grow: 1;
             border: 1px solid var(--border-gold);
             border-radius: 4px;
             background: #fff;
         }
 
-        /* Chat Dashboard Layout */
+        /* --- CHAT ANALYSE TAB --- */
         .chat-controls {
             display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+            flex-shrink: 0;
         }
 
-        .grid {
+        .chat-grid {
             display: grid;
-            grid-template-columns: 250px 250px 1fr;
-            gap: 20px;
-            height: 600px;
+            grid-template-columns: 260px 240px 1fr;
+            gap: 15px;
+            flex-grow: 1;
+            height: calc(100% - 45px);
         }
 
         .panel {
             background: #12151a;
             border: 1px solid #333;
             border-radius: 6px;
-            padding: 15px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
         }
 
-        .scrollable {
+        .panel h3 {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            color: var(--border-gold);
+            border-bottom: 1px solid #222;
+            padding-bottom: 5px;
+            flex-shrink: 0;
+        }
+
+        /* Verplichte Scrollbalken voor Chat panels */
+        .scrollable-panel {
             overflow-y: auto;
             flex-grow: 1;
-            margin-top: 10px;
+            padding-right: 5px;
+        }
+
+        /* Styling van de scrollbalk */
+        .scrollable-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollable-panel::-webkit-scrollbar-thumb {
+            background: var(--border-gold);
+            border-radius: 3px;
         }
 
         .msg-item {
             background: #1a1e24;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 5px;
+            padding: 8px;
+            margin-bottom: 6px;
+            border-radius: 4px;
             border-left: 3px solid var(--border-gold);
             white-space: pre-wrap;
             font-family: sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .stem-tag { color: #ff5555; font-weight: bold; }
+
+        /* --- ACTIEF SPEL / FORMATTING TAB --- */
+        .speler-tabel {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .speler-tabel th, .speler-tabel td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #222;
+        }
+
+        .speler-tabel th {
+            color: var(--border-gold);
+            border-bottom: 2px solid var(--border-gold);
+        }
+
+        .status-levend {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .status-dood {
+            color: var(--accent-red);
+            font-weight: bold;
+            text-decoration: line-through;
+        }
+
+        .btn-small {
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            background: #222;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
@@ -176,19 +245,18 @@
             <nav>
                 <button class="tab-btn active" onclick="openTab('courant')">Dagelijkse Courant</button>
                 <button class="tab-btn" onclick="openTab('chat')">Chatgegevens</button>
+                <button class="tab-btn" onclick="openTab('actief')">Actief Spel & Formatting</button>
                 <button class="tab-btn" onclick="openTab('spel')">Spelgegevens</button>
-                <button class="tab-btn" onclick="openTab('actief')">Actief Spel</button>
             </nav>
         </header>
 
         <main>
             <!-- TAB 1: DAGELIJKSE COURANT -->
             <section id="courant" class="tab-content active">
-                <h2>De Dagelijkse Courant</h2>
                 <div class="courant-controls">
-                    <label for="courantSelect">Kies editie:</label>
+                    <label for="courantSelect">Selecteer editie:</label>
                     <select id="courantSelect" onchange="laadCourant(this.value)">
-                        <option>Scannen...</option>
+                        <option>Scannen naar couranten...</option>
                     </select>
                 </div>
                 <iframe id="courantViewer" class="courant-frame" src=""></iframe>
@@ -196,7 +264,6 @@
 
             <!-- TAB 2: CHATGEGEVENS -->
             <section id="chat" class="tab-content">
-                <h2>Chatanalyse</h2>
                 <div class="chat-controls">
                     <select id="modusSelect" onchange="renderChatData()">
                         <option value="stemmen">Alle Stemmen</option>
@@ -206,40 +273,59 @@
                     <select id="datumSelect" onchange="renderChatData()">
                         <option value="alle">Alle Dagen</option>
                     </select>
-                    <span id="chatStatus" style="margin-left: auto; color: #8b949e;">Laden...</span>
+                    <button class="btn-small" onclick="selecteerAlleenLevend()">Selecteer Alleen Levend</button>
+                    <span id="chatStatus" style="margin-left: auto; color: #8b949e; font-size: 0.85rem;">Laden...</span>
                 </div>
 
-                <div class="grid">
+                <div class="chat-grid">
                     <div class="panel">
-                        <h3>Personen (<span id="ledenAantal">0</span>)</h3>
-                        <div class="scrollable" id="personenLijst"></div>
+                        <h3>Spelers (<span id="ledenAantal">0</span>)</h3>
+                        <div class="scrollable-panel" id="personenLijst"></div>
                     </div>
                     <div class="panel">
                         <h3>Aantal Berichten</h3>
-                        <div class="scrollable" id="aantalBerichtenLijst"></div>
+                        <div class="scrollable-panel" id="aantalBerichtenLijst"></div>
                     </div>
                     <div class="panel">
-                        <h3 id="resultaatTitel">RESULTATEN</h3>
-                        <div class="scrollable" id="resultatenLijst"></div>
+                        <h3>Chatresultaten</h3>
+                        <div class="scrollable-panel" id="resultatenLijst"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 3: SPELGEGEVENS -->
-            <section id="spel" class="tab-content">
-                <h2>Spelgegevens</h2>
-                <p style="color: var(--text-muted);">Overzicht van winstpercentages en rollenverdeling.</p>
+            <!-- TAB 3: ACTIEF SPEL & FORMATTING -->
+            <section id="actief" class="tab-content">
+                <h2 style="margin-top:0; color: var(--border-gold);">Actief Spel - Spelerslijst</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Beheer hier de status van de spelers. Dit synchroniseert direct met de chatanalyse.</p>
+                
+                <div class="scrollable-panel" style="max-height: 100%;">
+                    <table class="speler-tabel">
+                        <thead>
+                            <tr>
+                                <th>Spelernaam</th>
+                                <th>Status</th>
+                                <th>Actie</th>
+                            </tr>
+                        </thead>
+                        <tbody id="spelerTabelBody">
+                            <!-- Dynamisch gevuld -->
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
-            <!-- TAB 4: ACTIEF SPEL -->
-            <section id="actief" class="tab-content">
-                <h2>Actief Spel</h2>
-                <p style="color: var(--text-muted);">Live status van de huidige ronde.</p>
+            <!-- TAB 4: SPELGEGEVENS -->
+            <section id="spel" class="tab-content">
+                <h2 style="margin-top:0; color: var(--border-gold);">Spelstatistieken</h2>
+                <p style="color: var(--text-muted);">Overzicht van historische spelgegevens en uitkomsten.</p>
             </section>
         </main>
     </div>
 
     <script>
+        // --- SPELERS STATUS (Gekoppeld aan Actief Spel) ---
+        let spelersStatus = {}; // { "Naam": "levend" | "dood" }
+
         // --- TAB ROUTING ---
         function openTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -264,7 +350,6 @@
                     const fileName = `Courant_${spel}.${editie}.html`;
                     const filePath = `couranten/${fileName}`;
 
-                    // HEAD request om te checken of het bestand echt bestaat
                     const check = fetch(filePath, { method: 'HEAD' })
                         .then(response => {
                             if (response.ok) {
@@ -281,17 +366,17 @@
             select.innerHTML = '';
 
             if (gevondenCouranten.length === 0) {
-                select.innerHTML = '<option>Geen couranten gevonden in /couranten/</option>';
+                select.innerHTML = '<option>Geen couranten gevonden</option>';
                 return;
             }
 
-            // Sorteer van nieuwste naar oudste
             gevondenCouranten.sort((a, b) => (b.spel - a.spel) || (b.editie - a.editie));
 
             gevondenCouranten.forEach(item => {
                 const opt = document.createElement('option');
                 opt.value = item.file;
-                opt.innerText = `Spel ${item.spel} - Editie ${item.editie} (${item.file})`;
+                // Filenaam is hier NIET zichtbaar, alleen Spel en Editie:
+                opt.innerText = `Spel ${item.spel} - Editie ${item.editie}`;
                 select.appendChild(opt);
             });
 
@@ -304,7 +389,7 @@
             }
         }
 
-        // --- CHAT ANALYSER ---
+        // --- CHAT ANALYSER & ACTIEF SPEL ---
         let globalChatData = { berichten: [], personen: [], datums: [] };
 
         async function initChat() {
@@ -346,6 +431,12 @@
             if (huidigBericht) berichten.push(huidigBericht);
 
             const personen = Array.from(personenSet).sort();
+            
+            // Standaard staat iedereen op 'levend' als ze nog niet bestaan
+            personen.forEach(p => {
+                if (!spelersStatus[p]) spelersStatus[p] = "levend";
+            });
+
             berichten.forEach(b => {
                 const t = b.tekst.toLowerCase();
                 b.is_stem = t.includes("ik stem") || t.includes("stem op") || personen.some(p => new RegExp('\\bstem ' + p.toLowerCase() + '\\b').test(t));
@@ -353,19 +444,59 @@
 
             globalChatData = { berichten, personen, datums: Array.from(datumsSet) };
             
-            // Vul selectievelden
+            // Vul datum opties
             const datumSelect = document.getElementById('datumSelect');
             datumSelect.innerHTML = '<option value="alle">Alle Dagen</option>';
             globalChatData.datums.forEach(d => datumSelect.innerHTML += `<option value="${d}">${d}</option>`);
 
+            renderSpelersTabel();
+            renderPersonenLijst();
+            renderChatData();
+        }
+
+        function renderPersonenLijst() {
             const personenContainer = document.getElementById('personenLijst');
             document.getElementById('ledenAantal').innerText = globalChatData.personen.length;
-            personenContainer.innerHTML = globalChatData.personen.map(p => `
-                <label style="display:block; margin-bottom: 5px;">
-                    <input type="checkbox" value="${p}" checked onchange="renderChatData()" class="persoon-check"> ${p}
-                </label>
-            `).join('');
+            
+            personenContainer.innerHTML = globalChatData.personen.map(p => {
+                const isDood = spelersStatus[p] === "dood";
+                return `
+                <label style="display:block; margin-bottom: 6px; font-size: 0.85rem; ${isDood ? 'opacity: 0.5; text-decoration: line-through;' : ''}">
+                    <input type="checkbox" value="${p}" checked onchange="renderChatData()" class="persoon-check" data-naam="${p}"> 
+                    ${p} ${isDood ? '(Dood)' : ''}
+                </label>`;
+            }).join('');
+        }
 
+        function renderSpelersTabel() {
+            const tbody = document.getElementById('spelerTabelBody');
+            tbody.innerHTML = globalChatData.personen.map(p => {
+                const isLevend = spelersStatus[p] === "levend";
+                return `
+                <tr>
+                    <td><b>${p}</b></td>
+                    <td class="${isLevend ? 'status-levend' : 'status-dood'}">${isLevend ? 'Levend' : 'Dood'}</td>
+                    <td>
+                        <button class="btn-small" onclick="wisselStatus('${p}')">
+                            Markeer als ${isLevend ? 'Dood' : 'Levend'}
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function wisselStatus(naam) {
+            spelersStatus[naam] = spelersStatus[naam] === "levend" ? "dood" : "levend";
+            renderSpelersTabel();
+            renderPersonenLijst();
+            renderChatData();
+        }
+
+        function selecteerAlleenLevend() {
+            document.querySelectorAll('.persoon-check').forEach(cb => {
+                const naam = cb.getAttribute('data-naam');
+                cb.checked = (spelersStatus[naam] === "levend");
+            });
             renderChatData();
         }
 
@@ -386,7 +517,7 @@
             gefilterd.forEach(b => aantallen[b.persoon] = (aantallen[b.persoon] || 0) + 1);
             document.getElementById('aantalBerichtenLijst').innerHTML = Object.entries(aantallen)
                 .sort((a,b) => b[1] - a[1])
-                .map(([p, count]) => `<div>• ${p}: <b>${count}</b></div>`).join('') || '(Geen data)';
+                .map(([p, count]) => `<div style="font-size:0.85rem; margin-bottom:4px;">• ${p}: <b>${count}</b></div>`).join('') || '<small>(Geen data)</small>';
 
             // Berichten
             const resContainer = document.getElementById('resultatenLijst');
@@ -396,7 +527,7 @@
                 <div class="msg-item">
                     <small>[${b.datum} ${b.tijd.substring(0,5)}]</small> <b>${b.persoon}</b> ${b.is_stem ? '<span class="stem-tag">[STEM]</span>' : ''}:<br>${b.tekst}
                 </div>
-            `).join('') || '(Geen resultaten)';
+            `).join('') || '<small>(Geen resultaten)</small>';
         }
 
         // Starten bij pagina-load
