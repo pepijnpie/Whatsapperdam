@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wakkerdam - Het Dorp</title>
+    <style>
+        :root {
+            --bg-dark: #0a0c10;
+            --panel-bg: rgba(22, 27, 34, 0.9);
+            --border-gold: #c9a050;
+            --text-main: #e6edf3;
+            --text-muted: #8b949e;
+            --accent-red: #8b0000;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--bg-dark) url('https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .overlay {
+            background: rgba(10, 12, 16, 0.85);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(15, 15, 20, 0.95);
+            border-bottom: 2px solid var(--border-gold);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: 3px;
+            color: var(--border-gold);
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: #1a1e24;
+            color: var(--text-main);
+            border: 1px solid var(--border-gold);
+            padding: 10px 20px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background: var(--accent-red);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--panel-bg);
+            border: 1px solid rgba(201, 160, 80, 0.3);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Courant Styles */
+        .courant-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(0,0,0,0.4);
+            padding: 12px 18px;
+            border-radius: 6px;
+            border: 1px solid #333;
+        }
+
+        select, input {
+            background: #12151a;
+            color: var(--border-gold);
+            border: 1px solid var(--border-gold);
+            padding: 8px 12px;
+            font-family: inherit;
+            border-radius: 4px;
+        }
+
+        .courant-frame {
+            width: 100%;
+            height: 75vh;
+            border: 1px solid var(--border-gold);
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        /* Chat Dashboard Layout */
+        .chat-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 250px 250px 1fr;
+            gap: 20px;
+            height: 600px;
+        }
+
+        .panel {
+            background: #12151a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .scrollable {
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-top: 10px;
+        }
+
+        .msg-item {
+            background: #1a1e24;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border-left: 3px solid var(--border-gold);
+            white-space: pre-wrap;
+            font-family: sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .stem-tag { color: #ff5555; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <header>
+            <h1>Wakkerdam Archief</h1>
+            <nav>
+                <button class="tab-btn active" onclick="openTab('courant')">Dagelijkse Courant</button>
+                <button class="tab-btn" onclick="openTab('chat')">Chatgegevens</button>
+                <button class="tab-btn" onclick="openTab('spel')">Spelgegevens</button>
+                <button class="tab-btn" onclick="openTab('actief')">Actief Spel</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- TAB 1: DAGELIJKSE COURANT -->
+            <section id="courant" class="tab-content active">
+                <h2>De Dagelijkse Courant</h2>
+                <div class="courant-controls">
+                    <label for="courantSelect">Kies editie:</label>
+                    <select id="courantSelect" onchange="laadCourant(this.value)">
+                        <option>Scannen...</option>
+                    </select>
+                </div>
+                <iframe id="courantViewer" class="courant-frame" src=""></iframe>
+            </section>
+
+            <!-- TAB 2: CHATGEGEVENS -->
+            <section id="chat" class="tab-content">
+                <h2>Chatanalyse</h2>
+                <div class="chat-controls">
+                    <select id="modusSelect" onchange="renderChatData()">
+                        <option value="stemmen">Alle Stemmen</option>
+                        <option value="berichten">Alle Berichten</option>
+                    </select>
+                    <input type="text" id="zoekBalk" placeholder="Zoek in berichten..." oninput="renderChatData()">
+                    <select id="datumSelect" onchange="renderChatData()">
+                        <option value="alle">Alle Dagen</option>
+                    </select>
+                    <span id="chatStatus" style="margin-left: auto; color: #8b949e;">Laden...</span>
+                </div>
+
+                <div class="grid">
+                    <div class="panel">
+                        <h3>Personen (<span id="ledenAantal">0</span>)</h3>
+                        <div class="scrollable" id="personenLijst"></div>
+                    </div>
+                    <div class="panel">
+                        <h3>Aantal Berichten</h3>
+                        <div class="scrollable" id="aantalBerichtenLijst"></div>
+                    </div>
+                    <div class="panel">
+                        <h3 id="resultaatTitel">RESULTATEN</h3>
+                        <div class="scrollable" id="resultatenLijst"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: SPELGEGEVENS -->
+            <section id="spel" class="tab-content">
+                <h2>Spelgegevens</h2>
+                <p style="color: var(--text-muted);">Overzicht van winstpercentages en rollenverdeling.</p>
+            </section>
+
+            <!-- TAB 4: ACTIEF SPEL -->
+            <section id="actief" class="tab-content">
+                <h2>Actief Spel</h2>
+                <p style="color: var(--text-muted);">Live status van de huidige ronde.</p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // --- TAB ROUTING ---
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // --- COURANT AUTOMATISCHE SCANNER ---
+        async function initCourantDirectory() {
+            const select = document.getElementById('courantSelect');
+            select.innerHTML = '<option>Scannen naar couranten...</option>';
+
+            const gevondenCouranten = [];
+            const maxSpellen = 25;
+            const maxEdities = 10;
+            const scanBeloftes = [];
+
+            for (let spel = 1; spel <= maxSpellen; spel++) {
+                for (let editie = 1; editie <= maxEdities; editie++) {
+                    const fileName = `Courant_${spel}.${editie}.html`;
+                    const filePath = `couranten/${fileName}`;
+
+                    // HEAD request om te checken of het bestand echt bestaat
+                    const check = fetch(filePath, { method: 'HEAD' })
+                        .then(response => {
+                            if (response.ok) {
+                                gevondenCouranten.push({ spel, editie, file: fileName });
+                            }
+                        })
+                        .catch(() => {});
+
+                    scanBeloftes.push(check);
+                }
+            }
+
+            await Promise.all(scanBeloftes);
+            select.innerHTML = '';
+
+            if (gevondenCouranten.length === 0) {
+                select.innerHTML = '<option>Geen couranten gevonden in /couranten/</option>';
+                return;
+            }
+
+            // Sorteer van nieuwste naar oudste
+            gevondenCouranten.sort((a, b) => (b.spel - a.spel) || (b.editie - a.editie));
+
+            gevondenCouranten.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.file;
+                opt.innerText = `Spel ${item.spel} - Editie ${item.editie} (${item.file})`;
+                select.appendChild(opt);
+            });
+
+            laadCourant(gevondenCouranten[0].file);
+        }
+
+        function laadCourant(fileName) {
+            if (fileName) {
+                document.getElementById('courantViewer').src = `couranten/${fileName}`;
+            }
+        }
+
+        // --- CHAT ANALYSER ---
+        let globalChatData = { berichten: [], personen: [], datums: [] };
+
+        async function initChat() {
+            try {
+                const chatRes = await fetch('_chat.txt');
+                if (!chatRes.ok) throw new Error("_chat.txt niet gevonden");
+                const chatText = await chatRes.text();
+                verwerkChatInBrowser(chatText);
+                document.getElementById('chatStatus').innerText = "Actief: _chat.txt";
+            } catch (err) {
+                document.getElementById('chatStatus').innerText = err.message;
+                document.getElementById('chatStatus').style.color = "red";
+            }
+        }
+
+        function verwerkChatInBrowser(rawText) {
+            const regels = rawText.split('\n');
+            const berichtPatroon = /^\[(\d{2}-\d{2}-\d{4}),\s(\d{2}:\d{2}:\d{2})\]\s([^:]+):\s/;
+
+            let berichten = [], personenSet = new Set(), datumsSet = new Set(), huidigBericht = null;
+            const negeer = ["toegevoegd", "gewijzigd", "gemaakt", "versleuteld", "beheerder"];
+
+            regels.forEach(regel => {
+                const schoon = regel.replace(/[\u200e\ufeff]/g, '');
+                const match = schoon.match(berichtPatroon);
+
+                if (match) {
+                    if (huidigBericht) berichten.push(huidigBericht);
+                    const datum = match[1], tijd = match[2], persoon = match[3].replace('~', '').trim();
+                    if (negeer.some(s => schoon.includes(s))) { huidigBericht = null; return; }
+                    const tekst = schoon.substring(match[0].length).trim();
+
+                    personenSet.add(persoon); datumsSet.add(datum);
+                    huidigBericht = { datum, tijd, persoon, tekst };
+                } else if (huidigBericht) {
+                    huidigBericht.tekst += "\n" + schoon.trim();
+                }
+            });
+            if (huidigBericht) berichten.push(huidigBericht);
+
+            const personen = Array.from(personenSet).sort();
+            berichten.forEach(b => {
+                const t = b.tekst.toLowerCase();
+                b.is_stem = t.includes("ik stem") || t.includes("stem op") || personen.some(p => new RegExp('\\bstem ' + p.toLowerCase() + '\\b').test(t));
+            });
+
+            globalChatData = { berichten, personen, datums: Array.from(datumsSet) };
+            
+            // Vul selectievelden
+            const datumSelect = document.getElementById('datumSelect');
+            datumSelect.innerHTML = '<option value="alle">Alle Dagen</option>';
+            globalChatData.datums.forEach(d => datumSelect.innerHTML += `<option value="${d}">${d}</option>`);
+
+            const personenContainer = document.getElementById('personenLijst');
+            document.getElementById('ledenAantal').innerText = globalChatData.personen.length;
+            personenContainer.innerHTML = globalChatData.personen.map(p => `
+                <label style="display:block; margin-bottom: 5px;">
+                    <input type="checkbox" value="${p}" checked onchange="renderChatData()" class="persoon-check"> ${p}
+                </label>
+            `).join('');
+
+            renderChatData();
+        }
+
+        function renderChatData() {
+            const modus = document.getElementById('modusSelect').value;
+            const zoekterm = document.getElementById('zoekBalk').value.toLowerCase();
+            const gekozenDatum = document.getElementById('datumSelect').value;
+            const gecheckt = Array.from(document.querySelectorAll('.persoon-check:checked')).map(c => c.value);
+
+            const gefilterd = globalChatData.berichten.filter(b => 
+                gecheckt.includes(b.persoon) &&
+                (gekozenDatum === 'alle' || b.datum === gekozenDatum) &&
+                (!zoekterm || b.tekst.toLowerCase().includes(zoekterm))
+            );
+
+            // Aantallen
+            const aantallen = {};
+            gefilterd.forEach(b => aantallen[b.persoon] = (aantallen[b.persoon] || 0) + 1);
+            document.getElementById('aantalBerichtenLijst').innerHTML = Object.entries(aantallen)
+                .sort((a,b) => b[1] - a[1])
+                .map(([p, count]) => `<div>• ${p}: <b>${count}</b></div>`).join('') || '(Geen data)';
+
+            // Berichten
+            const resContainer = document.getElementById('resultatenLijst');
+            const teTonen = modus === 'stemmen' ? gefilterd.filter(b => b.is_stem) : gefilterd;
+            
+            resContainer.innerHTML = teTonen.map(b => `
+                <div class="msg-item">
+                    <small>[${b.datum} ${b.tijd.substring(0,5)}]</small> <b>${b.persoon}</b> ${b.is_stem ? '<span class="stem-tag">[STEM]</span>' : ''}:<br>${b.tekst}
+                </div>
+            `).join('') || '(Geen resultaten)';
+        }
+
+        // Starten bij pagina-load
+        initCourantDirectory();
+        initChat();
+    </script>
+</body>
+</html>
