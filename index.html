@@ -3,19 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weerwolven Dashboard</title>
+    <title>Wakkerdam Courant & Dashboard</title>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --border-color: #333;
-            --text-color: #e0e0e0;
-            --accent-color: #3b82f6;
-            --status-levend: #4ade80;
-            --status-dood: #f87171;
-            --stem-bg: #282318;
+            --bg-color: #0f0f11;
+            --card-bg: #18181c;
+            --paper-bg: #f4ebd9;
+            --paper-text: #222222;
+            --border-color: #2d2d35;
+            --text-color: #e2e8f0;
+            --accent-color: #d97706;
+            --status-levend: #16a34a;
+            --status-dood: #dc2626;
+            --stem-bg: #2e2619;
             --stem-border: #f59e0b;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -26,69 +30,53 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
-        h1 {
-            margin-bottom: 20px;
-            color: #ffffff;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
-        }
-
-        .file-inputs {
+        header {
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
         }
 
-        .file-group {
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #ffffff;
             display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        label {
-            font-size: 0.85em;
-            color: #aaa;
-        }
-
-        input[type="file"], select {
-            padding: 8px 12px;
-            background: #2a2a2a;
-            border: 1px solid var(--border-color);
-            color: #fff;
-            border-radius: 4px;
+            align-items: center;
+            gap: 10px;
         }
 
         .tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
         }
 
         .tab {
-            padding: 10px 20px;
+            padding: 10px 22px;
             cursor: pointer;
             border-radius: 6px;
-            background: #2a2a2a;
-            border: none;
-            color: #fff;
-            font-weight: 500;
+            background: #23232a;
+            border: 1px solid var(--border-color);
+            color: #cbd5e1;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .tab:hover {
+            background: #2d2d37;
         }
 
         .tab.active {
             background: var(--accent-color);
+            color: #ffffff;
+            border-color: var(--accent-color);
         }
 
         .tab-content {
@@ -99,10 +87,91 @@
             display: block;
         }
 
+        /* COURANT KRANT DESIGN */
+        .courant-paper {
+            background-color: var(--paper-bg);
+            color: var(--paper-text);
+            padding: 35px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: 'Georgia', serif;
+        }
+
+        .courant-header {
+            text-align: center;
+            border-bottom: 3px double #333;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .courant-title {
+            font-size: 3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .courant-sub {
+            font-style: italic;
+            margin-top: 5px;
+            font-size: 0.95rem;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #333;
+            padding-top: 5px;
+        }
+
+        .courant-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        .courant-section-title {
+            font-size: 1.3rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+            margin-top: 0;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .stats-badge-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-badge {
+            background: #e5d5b7;
+            padding: 12px;
+            border-radius: 4px;
+            flex: 1;
+            text-align: center;
+            border: 1px solid #c2b193;
+        }
+
+        .stat-badge .num {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        /* DASHBOARD TABLES & CHAT */
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
 
         th, td {
@@ -112,24 +181,17 @@
         }
 
         th {
-            background-color: #2a2a2a;
-            color: #aaa;
+            background-color: #23232a;
+            color: #94a3b8;
         }
 
-        .status-levend {
-            color: var(--status-levend);
-            font-weight: bold;
-        }
-
-        .status-dood {
-            color: var(--status-dood);
-            font-weight: bold;
-        }
+        .status-levend { color: var(--status-levend); font-weight: bold; }
+        .status-dood { color: var(--status-dood); font-weight: bold; }
 
         .chat-box {
             max-height: 550px;
             overflow-y: auto;
-            background: #181818;
+            background: #121214;
             padding: 15px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
@@ -139,18 +201,18 @@
             margin-bottom: 10px;
             padding: 10px;
             border-radius: 6px;
-            background: #222;
+            background: #1c1c22;
         }
 
         .chat-msg .author {
             font-weight: bold;
-            color: #60a5fa;
+            color: #38bdf8;
             margin-right: 8px;
         }
 
         .chat-msg .time {
             font-size: 0.8em;
-            color: #888;
+            color: #64748b;
             float: right;
         }
 
@@ -167,7 +229,7 @@
         }
 
         .person-item {
-            background: #2a2a2a;
+            background: #23232a;
             padding: 8px 12px;
             border-radius: 4px;
             display: flex;
@@ -176,42 +238,82 @@
             font-size: 0.9em;
         }
 
-        .filters {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
+        select {
+            padding: 8px 12px;
+            background: #23232a;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🐺 WhatsApp Weerwolven Dashboard</h1>
+    <header>
+        <h1>🐺 De Wakkerdam Courant</h1>
+    </header>
 
-    <div class="card">
-        <div class="file-inputs">
-            <div class="file-group">
-                <label>1. Chat Bestand (_chat.txt)</label>
-                <input type="file" id="chatFileInput" accept=".txt">
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('courant')">🗞️ De Courant</button>
+        <button class="tab" onclick="switchTab('spelerlijst')">📜 Spelerlijst</button>
+        <button class="tab" onclick="switchTab('chat')">💬 Chatgegevens</button>
+    </div>
+
+    <!-- TAB 1: DE COURANT -->
+    <div id="courant" class="tab-content active">
+        <div class="courant-paper">
+            <div class="courant-header">
+                <h1 class="courant-title">De Wakkerdam Courant</h1>
+                <div class="courant-sub">
+                    <span>Editie: WhatsApp Weerwolven</span>
+                    <span>Status: Actief</span>
+                </div>
             </div>
-            <div class="file-group">
-                <label>2. Naam Mappings (naam_mappings.json)</label>
-                <input type="file" id="mappingFileInput" accept=".json">
+
+            <div class="stats-badge-container">
+                <div class="stat-badge">
+                    <span>Levende Burgers</span>
+                    <span class="num" id="statLevend" style="color: var(--status-levend);">0</span>
+                </div>
+                <div class="stat-badge">
+                    <span>Gevallen Dorpsgenoten</span>
+                    <span class="num" id="statDood" style="color: var(--status-dood);">0</span>
+                </div>
+                <div class="stat-badge">
+                    <span>Totaal Berichten</span>
+                    <span class="num" id="statBerichten">0</span>
+                </div>
             </div>
-            <div class="file-group">
-                <label>3. Spelers Status (spelers_status.json)</label>
-                <input type="file" id="statusFileInput" accept=".json">
+
+            <div class="courant-grid">
+                <div>
+                    <h2 class="courant-section-title">🕯️ Gevallen Rollen</h2>
+                    <table style="color: #222; width: 100%;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #333;">
+                                <th style="background:none; color:#222;">Speler</th>
+                                <th style="background:none; color:#222;">Rol</th>
+                            </tr>
+                        </thead>
+                        <tbody id="courantDodenTabel">
+                            <tr><td colspan="2">Laden van gegevens...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <h2 class="courant-section-title">📊 Meest Actief</h2>
+                    <ol id="courantActiefLijst" style="padding-left: 20px; line-height: 1.8;">
+                        <li>Gegevens laden...</li>
+                    </ol>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="tabs">
-        <button class="tab active" onclick="switchTab('spelerlijst')">Spelerlijst</button>
-        <button class="tab" onclick="switchTab('chat')">Chatgegevens</button>
-    </div>
-
-    <!-- TAB 1: SPELERLIJST -->
-    <div id="spelerlijst" class="tab-content active">
+    <!-- TAB 2: SPELERLIJST -->
+    <div id="spelerlijst" class="tab-content">
         <div class="card">
             <h2>Spelersoverzicht</h2>
             <table>
@@ -223,30 +325,28 @@
                     </tr>
                 </thead>
                 <tbody id="spelerTabelBody">
-                    <tr><td colspan="3" style="text-align: center; color: #888;">Laad de bestanden in om gegevens te tonen.</td></tr>
+                    <tr><td colspan="3" style="text-align: center; color: #888;">Gegevens laden...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- TAB 2: CHATGEGEVENS -->
+    <!-- TAB 3: CHATGEGEVENS -->
     <div id="chat" class="tab-content">
         <div class="card">
-            <h2>Chat & Filter</h2>
-            <div class="filters">
-                <div>
-                    <label>Datum:</label>
-                    <select id="datumSelect" onchange="renderChatData()"></select>
-                </div>
+            <h2>Chat & Filters</h2>
+            <div style="margin-bottom: 15px;">
+                <label>Filter op datum: </label>
+                <select id="datumSelect" onchange="renderChatData()"></select>
             </div>
             
-            <label>Spelers in de chat:</label>
+            <label>Spelers in het gesprek:</label>
             <div id="personenLijst" class="person-list"></div>
         </div>
 
         <div class="card">
             <div class="chat-box" id="chatContainer">
-                <div style="text-align: center; color: #888;">Geen chatberichten geladen.</div>
+                <div style="text-align: center; color: #888;">Laden van berichten...</div>
             </div>
         </div>
     </div>
@@ -254,39 +354,42 @@
 
 <script>
     let naamMappings = {};
+    let spelersStatusRaw = {};
     let spelersStatus = {};
-    let rawChatText = "";
     let globalChatData = { berichten: [], personen: [], datums: [] };
 
-    document.getElementById('mappingFileInput').addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            naamMappings = JSON.parse(await file.text());
-            herlaad();
-        }
-    });
+    // Automatisch bestanden ophalen uit dezelfde map bij het openen van de pagina
+    async function laadBestanden() {
+        try {
+            const [chatRes, mappingRes, statusRes] = await Promise.all([
+                fetch('_chat.txt'),
+                fetch('naam_mappings.json'),
+                fetch('spelers_status.json')
+            ]);
 
-    document.getElementById('statusFileInput').addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            spelersStatus = JSON.parse(await file.text());
-            herlaad();
-        }
-    });
+            if (mappingRes.ok) naamMappings = await mappingRes.json();
+            if (statusRes.ok) spelersStatusRaw = await statusRes.json();
+            
+            verwerkSpelersStatus();
 
-    document.getElementById('chatFileInput').addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            rawChatText = await file.text();
-            herlaad();
+            if (chatRes.ok) {
+                const chatText = await chatRes.text();
+                verwerkChatInBrowser(chatText);
+            } else {
+                renderSpelersTabel();
+                renderCourant();
+            }
+        } catch (e) {
+            console.error("Fout bij inladen van bestanden:", e);
         }
-    });
+    }
 
-    function herlaad() {
-        if (rawChatText) {
-            verwerkChatInBrowser(rawChatText);
-        } else {
-            renderSpelersTabel();
+    function verwerkSpelersStatus() {
+        spelersStatus = {};
+        for (const [ruweNaam, data] of Object.entries(spelersStatusRaw)) {
+            // Mapping direct toepassen op de naam
+            const schoneNaam = naamMappings[ruweNaam] || ruweNaam;
+            spelersStatus[schoneNaam] = data;
         }
     }
 
@@ -306,7 +409,6 @@
                 const datum = match[1], tijd = match[2];
                 const ruweNaam = match[3].replace('~', '').trim();
                 
-                // Vertaal naam direct via naam_mappings.json
                 const persoon = naamMappings[ruweNaam] || ruweNaam;
 
                 if (negeer.some(s => schoon.includes(s))) { huidigBericht = null; return; }
@@ -322,6 +424,12 @@
 
         const personen = Array.from(personenSet).sort();
 
+        personen.forEach(p => {
+            if (!spelersStatus[p]) {
+                spelersStatus[p] = { status: "levend", rol: "Onbekend" };
+            }
+        });
+
         berichten.forEach(b => {
             const t = b.tekst.toLowerCase();
             b.is_stem = t.includes("ik stem") || t.includes("stem op") || personen.some(p => new RegExp('\\bstem ' + p.toLowerCase() + '\\b').test(t));
@@ -336,6 +444,7 @@
         renderSpelersTabel();
         renderPersonenLijst();
         renderChatData();
+        renderCourant();
     }
 
     function renderSpelersTabel() {
@@ -343,25 +452,59 @@
         const keys = Object.keys(spelersStatus);
 
         if (keys.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #888;">Geen spelers geladen.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #888;">Geen spelers gevonden.</td></tr>';
             return;
         }
         
-        tbody.innerHTML = keys.map(k => {
-            const st = spelersStatus[k] || {};
-            // Vertaal de sleutel uit spelers_status.json indien aanwezig in naam_mappings.json
-            const weergaveNaam = naamMappings[k] || k;
+        tbody.innerHTML = keys.map(p => {
+            const st = spelersStatus[p] || {};
             const rawStatus = (st.status || 'levend').toLowerCase();
             const isLevend = rawStatus === "levend";
             const rolTekst = (st.rol && st.rol.trim() !== "") ? st.rol : "Onbekend";
 
             return `
             <tr>
-                <td><b>${weergaveNaam}</b></td>
+                <td><b>${p}</b></td>
                 <td class="${isLevend ? 'status-levend' : 'status-dood'}">${rawStatus.toUpperCase()}</td>
                 <td>${rolTekst}</td>
             </tr>`;
         }).join('');
+    }
+
+    function renderCourant() {
+        let levendCount = 0;
+        let doodCount = 0;
+        let dodenHTML = '';
+
+        Object.entries(spelersStatus).forEach(([speler, st]) => {
+            const isDood = (st.status || '').toLowerCase() === 'dood';
+            if (isDood) {
+                doodCount++;
+                dodenHTML += `<tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 6px 0;"><b>${speler}</b></td>
+                    <td style="padding: 6px 0; color: #dc2626;">${st.rol || 'Onbekend'}</td>
+                </tr>`;
+            } else {
+                levendCount++;
+            }
+        });
+
+        document.getElementById('statLevend').innerText = levendCount;
+        document.getElementById('statDood').innerText = doodCount;
+        document.getElementById('statBerichten').innerText = globalChatData.berichten.length;
+
+        document.getElementById('courantDodenTabel').innerHTML = dodenHTML || '<tr><td colspan="2">Nog geen doden bekend.</td></tr>';
+
+        // Bereken meest actieve spelers uit de chat
+        const telling = {};
+        globalChatData.berichten.forEach(b => {
+            telling[b.persoon] = (telling[b.persoon] || 0) + 1;
+        });
+
+        const gesorteerd = Object.entries(telling).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        document.getElementById('courantActiefLijst').innerHTML = gesorteerd.map(([naam, aantal]) => 
+            `<li><b>${naam}</b>: ${aantal} berichten</li>`
+        ).join('') || '<li>Geen berichten verwerkt.</li>';
     }
 
     function renderPersonenLijst() {
@@ -410,6 +553,9 @@
     function escapeHtml(text) {
         return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
     }
+
+    // Start direct met inladen van bestanden bij pagina-start
+    window.addEventListener('DOMContentLoaded', laadBestanden);
 </script>
 
 </body>
