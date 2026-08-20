@@ -215,7 +215,7 @@
             <nav>
                 <button class="tab-btn active" onclick="openTab('courant')">Dagelijkse Courant</button>
                 <button class="tab-btn" onclick="openTab('chat')">Chatgegevens</button>
-                <button class="tab-btn" onclick="openTab('actief')">Actief Spel & Rollen</button>
+                <button class="tab-btn" onclick="openTab('actief')">Spelerlijst</button>
             </nav>
         </header>
 
@@ -260,13 +260,13 @@
                 </div>
             </section>
 
-            <!-- ACTIEF SPEL & ROLLEN -->
+            <!-- SPELERLIUST -->
             <section id="actief" class="tab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
-                    <h2 style="margin:0; color: var(--border-gold);">Actief Spel & Backend Status</h2>
+                    <h2 style="margin:0; color: var(--border-gold);">Spelerlijst</h2>
                     <button class="btn-small" onclick="exporteerStatusJSON()" style="background: var(--accent-red); color:#fff;">Exporteer Status JSON</button>
                 </div>
-                <p style="color: var(--text-muted); font-size: 0.85rem; flex-shrink:0;">Pas rollen/status aan en exporteer naar <code>spelers_status.json</code> in GitHub.</p>
+                <p style="color: var(--text-muted); font-size: 0.85rem; flex-shrink:0;">Pas de status en rollen van spelers aan en exporteer naar <code>spelers_status.json</code> op GitHub.</p>
                 
                 <div class="scrollable-panel">
                     <table class="speler-tabel">
