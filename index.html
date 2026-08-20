@@ -192,8 +192,8 @@
 
         /* Spelers Tabel */
         .speler-tabel { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .speler-tabel th, .speler-tabel td { padding: 8px; text-align: left; border-bottom: 1px solid #222; font-size: 0.85rem; }
-        .speler-tabel th { color: var(--border-gold); }
+        .speler-tabel th, .speler-tabel td { padding: 10px; text-align: left; border-bottom: 1px solid #222; font-size: 0.9rem; }
+        .speler-tabel th { color: var(--border-gold); background: rgba(0,0,0,0.3); }
         .status-levend { color: var(--accent-green); font-weight: bold; }
         .status-dood { color: var(--accent-red); font-weight: bold; }
 
@@ -260,13 +260,12 @@
                 </div>
             </section>
 
-            <!-- SPELERLIJST -->
+            <!-- SPELERLIJST (READ-ONLY) -->
             <section id="actief" class="tab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
                     <h2 style="margin:0; color: var(--border-gold);">Spelerlijst</h2>
-                    <button class="btn-small" onclick="exporteerStatusJSON()" style="background: var(--accent-red); color:#fff;">Exporteer Status JSON</button>
                 </div>
-                <p style="color: var(--text-muted); font-size: 0.85rem; flex-shrink:0;">Pas de status en rollen van spelers aan en exporteer naar <code>spelers_status.json</code> op GitHub.</p>
+                <p style="color: var(--text-muted); font-size: 0.85rem; flex-shrink:0;">Actuele status en bekende rollen uit het spel.</p>
                 
                 <div class="scrollable-panel">
                     <table class="speler-tabel">
@@ -275,8 +274,6 @@
                                 <th>Speler</th>
                                 <th>Status</th>
                                 <th>Rol</th>
-                                <th>Rol Onthuld?</th>
-                                <th>Acties</th>
                             </tr>
                         </thead>
                         <tbody id="spelerTabelBody"></tbody>
@@ -392,13 +389,6 @@
 
             const personen = Array.from(personenSet).sort();
 
-            // Initieer lege status objecten als speler nog niet in spelers_status.json staat
-            personen.forEach(p => {
-                if (!spelersStatus[p]) {
-                    spelersStatus[p] = { status: "levend", rol: "Onbekend", onthuld: false };
-                }
-            });
-
             berichten.forEach(b => {
                 const t = b.tekst.toLowerCase();
                 b.is_stem = t.includes("ik stem") || t.includes("stem op") || personen.some(p => new RegExp('\\bstem ' + p.toLowerCase() + '\\b').test(t));
@@ -421,12 +411,13 @@
             
             container.innerHTML = globalChatData.personen.map(p => {
                 const st = spelersStatus[p] || {};
-                const isDood = st.status === "dood";
-                const rolTekst = st.onthuld ? ` [${st.rol}]` : '';
+                const isDood = (st.status || 'levend').toLowerCase() === "dood";
+                const rol = (st.rol && st.rol !== "") ? st.rol : "Onbekend";
+                
                 return `
                 <label style="display:block; margin-bottom:6px; font-size:0.85rem; ${isDood ? 'opacity:0.5; text-decoration:line-through;' : ''}">
                     <input type="checkbox" value="${p}" checked onchange="renderChatData()" class="persoon-check" data-naam="${p}"> 
-                    ${p}${rolTekst} ${isDood ? '(Dood)' : ''}
+                    ${p} ${rol !== "Onbekend" ? `[${rol}]` : ''} ${isDood ? '(Dood)' : ''}
                 </label>`;
             }).join('');
         }
@@ -434,53 +425,25 @@
         function renderSpelersTabel() {
             const tbody = document.getElementById('spelerTabelBody');
             tbody.innerHTML = globalChatData.personen.map(p => {
-                const st = spelersStatus[p] || { status: 'levend', rol: 'Onbekend', onthuld: false };
-                const isLevend = st.status === "levend";
+                const st = spelersStatus[p] || {};
+                const rawStatus = (st.status || 'levend').toLowerCase();
+                const isLevend = rawStatus === "levend";
+                const rolTekst = (st.rol && st.rol.trim() !== "") ? st.rol : "Onbekend";
 
                 return `
                 <tr>
                     <td><b>${p}</b></td>
-                    <td class="${isLevend ? 'status-levend' : 'status-dood'}">${st.status.toUpperCase()}</td>
-                    <td>
-                        <input type="text" value="${st.rol}" style="width:100px;" onchange="updateRol('${p}', this.value)">
-                    </td>
-                    <td>
-                        <input type="checkbox" ${st.onthuld ? 'checked' : ''} onchange="updateOnthuld('${p}', this.checked)"> Onthuld
-                    </td>
-                    <td>
-                        <button class="btn-small" onclick="wisselStatus('${p}')">
-                            Markeer ${isLevend ? 'Dood' : 'Levend'}
-                        </button>
-                    </td>
+                    <td class="${isLevend ? 'status-levend' : 'status-dood'}">${rawStatus.toUpperCase()}</td>
+                    <td>${rolTekst}</td>
                 </tr>`;
             }).join('');
-        }
-
-        function wisselStatus(p) {
-            spelersStatus[p].status = spelersStatus[p].status === "levend" ? "dood" : "levend";
-            herlaadInterface();
-        }
-
-        function updateRol(p, rol) {
-            spelersStatus[p].rol = rol;
-            herlaadInterface();
-        }
-
-        function updateOnthuld(p, onthuld) {
-            spelersStatus[p].onthuld = onthuld;
-            herlaadInterface();
-        }
-
-        function herlaadInterface() {
-            renderSpelersTabel();
-            renderPersonenLijst();
-            renderChatData();
         }
 
         function selecteerAlleenLevend() {
             document.querySelectorAll('.persoon-check').forEach(cb => {
                 const naam = cb.getAttribute('data-naam');
-                cb.checked = (spelersStatus[naam]?.status === "levend");
+                const st = spelersStatus[naam] || {};
+                cb.checked = ((st.status || 'levend').toLowerCase() === "levend");
             });
             renderChatData();
         }
@@ -513,17 +476,6 @@
                     <small>[${b.datum} ${b.tijd.substring(0,5)}]</small> <b>${b.persoon}</b> ${b.is_stem ? '<span class="stem-tag">[STEM]</span>' : ''}:<br>${b.tekst}
                 </div>
             `).join('') || '<small>(Geen resultaten)</small>';
-        }
-
-        // Exporteer knop om spelers_status.json direct te kopiëren/downloaden
-        function exporteerStatusJSON() {
-            const jsonStr = JSON.stringify(spelersStatus, null, 2);
-            const blob = new Blob([jsonStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "spelers_status.json";
-            a.click();
         }
 
         initCourantDirectory();
