@@ -360,46 +360,55 @@
         function verwerkChatInBrowser(rawText) {
             const regels = rawText.split('\n');
             const berichtPatroon = /^\[(\d{2}-\d{2}-\d{4}),\s(\d{2}:\d{2}:\d{2})\]\s([^:]+):\s/;
-
+        
             let berichten = [], personenSet = new Set(), datumsSet = new Set(), huidigBericht = null;
             const negeer = ["toegevoegd", "gewijzigd", "gemaakt", "versleuteld", "beheerder"];
-
+        
             regels.forEach(regel => {
                 const schoon = regel.replace(/[\u200e\ufeff]/g, '');
                 const match = schoon.match(berichtPatroon);
-
+        
                 if (match) {
                     if (huidigBericht) berichten.push(huidigBericht);
                     const datum = match[1], tijd = match[2];
                     let ruweNaam = match[3].replace('~', '').trim();
                     
-                    // Vertaal naam via naam_mappings.json
+                    // 1. VERTAAL NAAR OFFICIËLE NAAM (EERST MAPPING TOEPASSEN)
                     const persoon = naamMappings[ruweNaam] || ruweNaam;
-
+        
                     if (negeer.some(s => schoon.includes(s))) { huidigBericht = null; return; }
                     const tekst = schoon.substring(match[0].length).trim();
-
-                    personenSet.add(persoon); datumsSet.add(datum);
+        
+                    personenSet.add(persoon); 
+                    datumsSet.add(datum);
                     huidigBericht = { datum, tijd, persoon, tekst };
                 } else if (huidigBericht) {
                     huidigBericht.tekst += "\n" + schoon.trim();
                 }
             });
             if (huidigBericht) berichten.push(huidigBericht);
-
+        
             const personen = Array.from(personenSet).sort();
-
+        
+            // 2. KOPPEL STATUS AAN VERTAALDE NAAM
+            personen.forEach(p => {
+                if (!spelersStatus[p]) {
+                    // Als de vertaalde naam niet in status JSON staat, default naar levend/onbekend
+                    spelersStatus[p] = { status: "levend", rol: "Onbekend" };
+                }
+            });
+        
             berichten.forEach(b => {
                 const t = b.tekst.toLowerCase();
                 b.is_stem = t.includes("ik stem") || t.includes("stem op") || personen.some(p => new RegExp('\\bstem ' + p.toLowerCase() + '\\b').test(t));
             });
-
+        
             globalChatData = { berichten, personen, datums: Array.from(datumsSet) };
             
             const datumSelect = document.getElementById('datumSelect');
             datumSelect.innerHTML = '<option value="alle">Alle Dagen</option>';
             globalChatData.datums.forEach(d => datumSelect.innerHTML += `<option value="${d}">${d}</option>`);
-
+        
             renderSpelersTabel();
             renderPersonenLijst();
             renderChatData();
