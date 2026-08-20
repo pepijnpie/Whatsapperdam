@@ -98,7 +98,7 @@
             display: block;
         }
 
-        /* Courant Styles - Volledige hoogte zonder interne scrollbar */
+        /* Courant Styles - Volledige hoogte zonder interne of externe iframe scrollbar */
         .courant-controls {
             display: flex;
             gap: 15px;
@@ -124,9 +124,8 @@
             border: 1px solid var(--border-gold);
             border-radius: 4px;
             background: #fff;
-            scrolling: no;
-            overflow: hidden;
             display: block;
+            overflow: hidden;
         }
 
         /* Chat Dashboard Layout met werkende scrollbars op de panelen */
@@ -176,15 +175,17 @@
             padding-right: 5px;
         }
 
+        /* Compactere berichtkaartjes */
         .msg-item {
             background: #1a1e24;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 5px;
+            padding: 6px 10px;
+            margin-bottom: 4px;
+            border-radius: 4px;
             border-left: 3px solid var(--border-gold);
             white-space: pre-wrap;
             font-family: sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
+            line-height: 1.35;
         }
 
         .stem-tag { color: #ff5555; font-weight: bold; }
@@ -234,7 +235,7 @@
                         <option>Scannen...</option>
                     </select>
                 </div>
-                <iframe id="courantViewer" class="courant-frame" src="" onload="adjustIframeHeight(this)"></iframe>
+                <iframe id="courantViewer" class="courant-frame" src="" scrolling="no" onload="adjustIframeHeight(this)"></iframe>
             </section>
 
             <!-- TAB 2: CHATGEGEVENS -->
@@ -242,8 +243,8 @@
                 <h2>Chatanalyse</h2>
                 <div class="chat-controls">
                     <select id="modusSelect" onchange="renderChatData()">
+                        <option value="berichten" selected>Alle Berichten</option>
                         <option value="stemmen">Alle Stemmen</option>
-                        <option value="berichten">Alle Berichten</option>
                     </select>
                     <input type="text" id="zoekBalk" placeholder="Zoek in berichten..." oninput="renderChatData()">
                     <select id="datumSelect" onchange="renderChatData()">
@@ -308,9 +309,14 @@
 
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
+
+            if (tabId === 'courant') {
+                const viewer = document.getElementById('courantViewer');
+                adjustIframeHeight(viewer);
+            }
         }
 
-        // --- COURANT LADER & AUTO HEIGHT ---
+        // --- COURANT LADER & EXACTE HOOGTE METING ---
         async function initCourantDirectory() {
             const select = document.getElementById('courantSelect');
             select.innerHTML = '<option>Scannen naar couranten...</option>';
@@ -367,10 +373,17 @@
         function adjustIframeHeight(iframe) {
             try {
                 if (iframe.contentWindow && iframe.contentWindow.document.body) {
-                    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 30 + 'px';
+                    const doc = iframe.contentWindow.document;
+                    const height = Math.max(
+                        doc.body.scrollHeight,
+                        doc.documentElement.scrollHeight,
+                        doc.body.offsetHeight,
+                        doc.documentElement.offsetHeight
+                    );
+                    iframe.style.height = (height + 20) + 'px';
                 }
             } catch (e) {
-                iframe.style.height = '1200px';
+                iframe.style.height = '1500px';
             }
         }
 
@@ -411,7 +424,10 @@
                 const match = schoon.match(berichtPatroon);
 
                 if (match) {
-                    if (huidigBericht) berichten.push(huidigBericht);
+                    if (huidigBericht) {
+                        huidigBericht.tekst = opruimenTekst(huidigBericht.tekst);
+                        berichten.push(huidigBericht);
+                    }
                     const datum = match[1], tijd = match[2];
                     const ruweNaam = match[3].replace('~', '').trim();
                     const persoon = naamMappings[ruweNaam] || ruweNaam;
@@ -425,7 +441,11 @@
                     huidigBericht.tekst += "\n" + schoon.trim();
                 }
             });
-            if (huidigBericht) berichten.push(huidigBericht);
+            
+            if (huidigBericht) {
+                huidigBericht.tekst = opruimenTekst(huidigBericht.tekst);
+                berichten.push(huidigBericht);
+            }
 
             const personen = Array.from(personenSet).sort();
             berichten.forEach(b => {
@@ -448,6 +468,11 @@
             `).join('');
 
             renderChatData();
+        }
+
+        // Verwijdert dubbele lege regels
+        function opruimenTekst(tekst) {
+            return tekst.replace(/\n\s*\n+/g, '\n').trim();
         }
 
         function renderChatData() {
