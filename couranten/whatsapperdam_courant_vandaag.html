@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Whatsapperdam Courant &mdash; Vandaag</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap');
+
+  :root{
+    --paper: #ece1c4;
+    --paper-dark: #ddcfa9;
+    --ink: #241c12;
+    --ink-soft: #4a3d28;
+    --rule: #3a2e1f;
+    --blood: #7a1815;
+    --gold: #96702a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper-dark);
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(0,0,0,0.05), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(0,0,0,0.06), transparent 45%);
+    font-family: 'PT Serif', serif;
+    color: var(--ink);
+    padding: 24px 12px 60px;
+  }
+
+  .sheet {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--paper);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+    padding: 28px 34px 40px;
+    position: relative;
+  }
+  .sheet::before{
+    content:"";
+    position:absolute; inset:10px;
+    border: 1px solid var(--ink);
+    pointer-events:none;
+    opacity:.35;
+  }
+
+  .stamp {
+    position: absolute;
+    top: 100px;
+    right: 34px;
+    width: 92px;
+    height: 92px;
+    border: 3px solid var(--blood);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--blood);
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transform: rotate(12deg);
+    opacity: .8;
+    mix-blend-mode: multiply;
+  }
+
+  .topline {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .masthead {
+    text-align: center;
+    padding: 14px 0 8px;
+    border-bottom: 4px double var(--rule);
+    margin-bottom: 10px;
+  }
+  .masthead h1 {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 64px;
+    margin: 0;
+    color: var(--ink);
+    letter-spacing: 1px;
+  }
+  .masthead .tagline {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--blood);
+    margin-top: 2px;
+  }
+
+  .subline {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Special Elite', monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--rule);
+    padding: 6px 0 8px;
+    margin-bottom: 18px;
+  }
+
+  .lede {
+    border-bottom: 3px solid var(--rule);
+    padding-bottom: 20px;
+    margin-bottom: 22px;
+  }
+  .lede h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 38px;
+    line-height: 1.05;
+    margin: 0 0 8px;
+  }
+  .lede .dek {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+  .lede p { font-size: 15px; line-height: 1.55; margin: 0 0 10px; }
+
+  .columns {
+    columns: 2;
+    column-gap: 30px;
+  }
+
+  article {
+    break-inside: avoid;
+    margin-bottom: 26px;
+    padding-bottom: 4px;
+  }
+
+  .eyebrow {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blood);
+    margin-bottom: 3px;
+  }
+
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.15;
+    margin: 0 0 6px;
+  }
+
+  article p {
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin: 0 0 8px;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  .dropcap:first-letter {
+    float: left;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 44px;
+    line-height: 37px;
+    padding: 4px 6px 0 0;
+    color: var(--blood);
+  }
+
+  .quote {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 14px;
+    border-left: 3px solid var(--blood);
+    padding-left: 10px;
+    margin: 8px 0;
+    color: var(--ink-soft);
+  }
+
+  .divider {
+    text-align: center;
+    color: var(--gold);
+    letter-spacing: 8px;
+    font-size: 12px;
+    margin: 4px 0 20px;
+  }
+
+  /* --- Achterpagina rommel --- */
+  .backmatter {
+    border-top: 4px double var(--rule);
+    padding-top: 16px;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 26px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+    margin: 0 0 10px;
+    position: relative;
+  }
+  .section-title::before, .section-title::after {
+    content: "";
+    display: inline-block;
+    width: 30px;
+    height: 1px;
+    background: var(--rule);
+    vertical-align: middle;
+    margin: 0 8px;
+  }
+
+  .classifieds {
+    border-right: 1px dashed var(--rule);
+    padding-right: 22px;
+  }
+  .ad {
+    font-size: 12px;
+    line-height: 1.45;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px dotted var(--ink-soft);
+  }
+  .ad:last-child { border-bottom: none; }
+  .ad .label {
+    font-family: 'Special Elite', monospace;
+    font-weight: bold;
+    color: var(--blood);
+    letter-spacing: .5px;
+    margin-right: 4px;
+  }
+
+  .horoscoop {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .horoscoop .sign {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--blood);
+  }
+  .horoscoop p { margin: 0 0 10px; }
+
+  .weer {
+    grid-column: 1 / -1;
+    margin-top: 18px;
+    border-top: 1px solid var(--rule);
+    padding-top: 14px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .weer .paw {
+    font-size: 30px;
+    line-height: 1;
+    color: var(--blood);
+    flex-shrink: 0;
+  }
+  .weer h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    margin: 0 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .weer p {
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin: 0;
+    color: var(--ink-soft);
+  }
+
+  .colofon {
+    margin-top: 22px;
+    text-align: center;
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 620px) {
+    .columns { columns: 1; }
+    .masthead h1 { font-size: 42px; }
+    .lede h2 { font-size: 26px; }
+    .stamp { display: none; }
+    .backmatter { grid-template-columns: 1fr; }
+    .classifieds { border-right: none; padding-right: 0; border-bottom: 1px dashed var(--rule); padding-bottom: 16px; margin-bottom: 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="stamp">Officieel<br>Dorps-<br>bericht</div>
+
+  <div class="topline">
+    <span>Jaargang I &mdash; Editie 15</span>
+    <span>Prijs: uw stem</span>
+  </div>
+
+  <div class="masthead">
+    <h1>Whatsapperdam Courant</h1>
+    <div class="tagline">Overdag &middot; Waarheid, Roddel en Alles Ertussenin</div>
+  </div>
+
+  <div class="subline">
+    <span>Editie: Vandaag</span>
+    <span>Het Burgerberaad</span>
+    <span>Oplage: wie er nog leeft</span>
+  </div>
+
+  <div class="lede">
+    <div class="eyebrow">Hoofdartikel</div>
+    <h2>Bouke Bekent: "Ik Heb Fajjaaz Gepepernoot"</h2>
+    <div class="dek">Burgemeester Rickert reageert nuchter: "Dus het is Tijs?"</div>
+    <p class="dropcap">Na dagen van welles-nietes kwam vandaag de bom alsnog barsten. Terwijl burgemeester Rickert hem opriep eindelijk eens iets prijs te geven, liet de rijke Bouke van Houten de woorden vallen die het hele dorp deden verstommen: "Ik heb Fajjaaz gepepernoot." Rickert reageerde nuchter met "Dus het is Tijs?", maar het dorp begreep vooral één ding: Bouke weet meer dan hij toegeeft.</p>
+  </div>
+
+  <div class="columns">
+
+    <article>
+      <div class="eyebrow">Burenruzie</div>
+      <h3>Ruben en Tijs Vliegen Elkaar in de Haren</h3>
+      <p class="dropcap">Wat begon als een simpel stemrondje ontplofte in een felle burenruzie. Bouke stemde Tijs, Tijs stemde terug op Bouke, en Ruben koos ook voor Tijs. Er volgde een hagelbui aan beschuldigingen en foto's over en weer, met als hoogtepunt Ruben's zelfverzekerde "Case closed" nadat een vermeend bewijsfoto gewoon een sticker bleek te zijn.</p>
+      <div class="quote">"Als er iemand lult is het Bouke, maar dat is nu eenmaal zijn stijl. Ruben is lief. Tijs weet ik nog niet." &mdash; Burgemeester Rickert</div>
+    </article>
+
+    <article>
+      <div class="eyebrow">Rechtspraak</div>
+      <h3>Ruben Bijna Gelyncht op Basis van Intimidatie</h3>
+      <p class="dropcap">Ruben deelde vanochtend zijn frustratie dat hij gisteren bijna werd uitgestemd "door de 2 mannen die me gingen opzoeken op werk." Barry noemde het meteen "je reinste intimidatie", en burgemeester Rickert kondigde plechtig aan dat Ruben-haat vanaf nu streng veroordeeld wordt. Bouke vond dat nogal hypocriet gezien Rickert zelf Julian de vorige avond nog liet branden.</p>
+    </article>
+
+    <article>
+      <div class="eyebrow">In het Vizier</div>
+      <h3>Nick Bais Nieuwe Doelwit van het Dorp</h3>
+      <p class="dropcap">De dag eindigde met de aandacht verschoven naar Nick Bais, nadat hij zichzelf verdedigde met de legendarische quote: "Ik identificeer mezelf als een vrouw. Dus leave me alone." Ondanks pogingen om de aandacht af te leiden naar Bouke ("Nick wolf confirmed?"), bleven de stemmen op Nick binnenstromen. Burgemeester Rickert hield zich echter afzijdig: "Ik hoop een teken van boven te krijgen."</p>
+    </article>
+
+    <article>
+      <div class="eyebrow">In Memoriam</div>
+      <h3>Buurman Bleek de Grote Boze Wolf</h3>
+      <p class="dropcap">Buurvrouw Ilse deelde emotioneel nieuws over haar overleden buurman. Rickert wees er fijntjes op dat Ilse verdacht snel een treurige emoji plaatste en weer verwijderde bij het overlijdensbericht van Fajjaaz &mdash; een detail dat het dorp niet onopgemerkt liet.</p>
+      <div class="quote">"Mn buurman was de grote boze wolf. Hij leek zo normaal. Met zn stationwagen en stropdas." &mdash; Ilse</div>
+    </article>
+
+  </div>
+
+  <div class="divider">&#10047; &#10047; &#10047;</div>
+
+  <div class="backmatter">
+
+    <div class="classifieds">
+      <div class="section-title">Kleine Advertenties</div>
+
+      <div class="ad"><span class="label">GEZOCHT:</span>een betere toneelspeler die geen zelfmoord pleegt. Ervaring met appendix C een pré. Solliciteren bij Pepijn (indien nog in leven).</div>
+
+      <div class="ad"><span class="label">TE KOOP:</span>één (1) villa met zwembad, mogelijk ontworpen door een architect-wolf. Vraagprijs onderhandelbaar, geen garantie op overlevingskansen buren.</div>
+
+      <div class="ad"><span class="label">VERLOREN:</span>het vertrouwen van het dorp in burgemeester Rickert. Vinder mag het houden.</div>
+
+      <div class="ad"><span class="label">GEZOCHT:</span>dorpsgenoot met alibi voor gisteravond. Ervaring met liegen tegen buren strikt niet gewenst.</div>
+
+      <div class="ad"><span class="label">AANGEBODEN:</span>gratis houtsnippers en fakkels, ophalen bij de brandstapel. Op = op.</div>
+    </div>
+
+    <div class="horoscoop">
+      <div class="section-title">Horoscoop</div>
+
+      <p><span class="sign">Ruben &mdash;</span> Vandaag onterecht verdacht, morgen weer. Draag iets brandwerends.</p>
+
+      <p><span class="sign">Tijs &mdash;</span> Uw grote mond bezorgt u vandaag een burenruzie. Overweeg te zwijgen, al is dat niet uw sterkste kant.</p>
+
+      <p><span class="sign">Bouke &mdash;</span> Een bekentenis ontsnapt uit uw mond op het slechtst mogelijke moment. Typisch.</p>
+
+      <p><span class="sign">Nick Bais &mdash;</span> De sterren staan verdacht. Net als u.</p>
+    </div>
+
+    <div class="weer">
+      <div class="paw">&#9760;</div>
+      <div>
+        <h4>Weerbericht</h4>
+        <p>Vandaag: kans op felle hitte rond de brandstapel, oplopend tot zeer warm richting de avond. 's Nachts: kans op onweer, gevolgd door gehuil in de verte.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="colofon">Whatsapperdam Courant &middot; verschijnt zolang het dorp bestaat &middot; geen abonnees, alleen overlevenden</div>
+
+</div>
+</body>
+</html>
