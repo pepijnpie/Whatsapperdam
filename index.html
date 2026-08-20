@@ -98,7 +98,7 @@
             display: block;
         }
 
-        /* Courant Styles */
+        /* Courant Styles - Volledige hoogte zonder interne scrollbar */
         .courant-controls {
             display: flex;
             gap: 15px;
@@ -121,13 +121,15 @@
 
         .courant-frame {
             width: 100%;
-            height: 75vh;
             border: 1px solid var(--border-gold);
             border-radius: 4px;
             background: #fff;
+            scrolling: no;
+            overflow: hidden;
+            display: block;
         }
 
-        /* Chat Dashboard Layout */
+        /* Chat Dashboard Layout met werkende scrollbars op de panelen */
         .chat-controls {
             display: flex;
             gap: 12px;
@@ -146,9 +148,9 @@
 
         .grid {
             display: grid;
-            grid-template-columns: 250px 250px 1fr;
-            gap: 20px;
-            height: 600px;
+            grid-template-columns: 240px 200px 1fr;
+            gap: 15px;
+            height: 650px;
         }
 
         .panel {
@@ -158,12 +160,20 @@
             padding: 15px;
             display: flex;
             flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .panel h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
         }
 
         .scrollable {
             overflow-y: auto;
-            flex-grow: 1;
-            margin-top: 10px;
+            flex: 1;
+            padding-right: 5px;
         }
 
         .msg-item {
@@ -210,8 +220,7 @@
             <nav>
                 <button class="tab-btn active" onclick="openTab('courant')">Dagelijkse Courant</button>
                 <button class="tab-btn" onclick="openTab('chat')">Chatgegevens</button>
-                <button class="tab-btn" onclick="openTab('spel')">Spelgegevens</button>
-                <button class="tab-btn" onclick="openTab('actief')">Actief Spel</button>
+                <button class="tab-btn" onclick="openTab('spelers')">Spelerlijst</button>
             </nav>
         </header>
 
@@ -225,7 +234,7 @@
                         <option>Scannen...</option>
                     </select>
                 </div>
-                <iframe id="courantViewer" class="courant-frame" src=""></iframe>
+                <iframe id="courantViewer" class="courant-frame" src="" onload="adjustIframeHeight(this)"></iframe>
             </section>
 
             <!-- TAB 2: CHATGEGEVENS -->
@@ -267,16 +276,10 @@
                 </div>
             </section>
 
-            <!-- TAB 3: SPELGEGEVENS -->
-            <section id="spel" class="tab-content">
-                <h2>Spelgegevens</h2>
-                <p style="color: var(--text-muted);">Overzicht van winstpercentages en rollenverdeling.</p>
-            </section>
-
-            <!-- TAB 4: ACTIEF SPEL -->
-            <section id="actief" class="tab-content">
-                <h2>Actief Spel</h2>
-                <p style="color: var(--text-muted);">Live status van de spelers in de huidige ronde.</p>
+            <!-- TAB 3: SPELERLIJST -->
+            <section id="spelers" class="tab-content">
+                <h2>Spelerlijst</h2>
+                <p style="color: var(--text-muted);">Status van alle deelnemers.</p>
                 <table class="status-table">
                     <thead>
                         <tr>
@@ -285,7 +288,7 @@
                             <th>Rol</th>
                         </tr>
                     </thead>
-                    <tbody id="actiefSpelTabel">
+                    <tbody id="spelerLijstTabel">
                         <tr><td colspan="3" style="color: var(--text-muted);">Laden...</td></tr>
                     </tbody>
                 </table>
@@ -294,7 +297,6 @@
     </div>
 
     <script>
-        // --- GLOBALE DATA ---
         let naamMappings = {};
         let spelersStatus = {};
         let globalChatData = { berichten: [], personen: [], datums: [] };
@@ -308,7 +310,7 @@
             event.currentTarget.classList.add('active');
         }
 
-        // --- COURANT AUTOMATISCHE SCANNER ---
+        // --- COURANT LADER & AUTO HEIGHT ---
         async function initCourantDirectory() {
             const select = document.getElementById('courantSelect');
             select.innerHTML = '<option>Scannen naar couranten...</option>';
@@ -357,7 +359,18 @@
 
         function laadCourant(fileName) {
             if (fileName) {
-                document.getElementById('courantViewer').src = `couranten/${fileName}`;
+                const viewer = document.getElementById('courantViewer');
+                viewer.src = `couranten/${fileName}`;
+            }
+        }
+
+        function adjustIframeHeight(iframe) {
+            try {
+                if (iframe.contentWindow && iframe.contentWindow.document.body) {
+                    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 30 + 'px';
+                }
+            } catch (e) {
+                iframe.style.height = '1200px';
             }
         }
 
@@ -373,7 +386,7 @@
                 if (mappingRes.ok) naamMappings = await mappingRes.json();
                 if (statusRes.ok) spelersStatus = await statusRes.json();
 
-                renderActiefSpel();
+                renderSpelerLijst();
 
                 if (!chatRes.ok) throw new Error("_chat.txt niet gevonden");
                 const chatText = await chatRes.text();
@@ -382,7 +395,7 @@
             } catch (err) {
                 document.getElementById('chatStatus').innerText = err.message;
                 document.getElementById('chatStatus').style.color = "red";
-                renderActiefSpel();
+                renderSpelerLijst();
             }
         }
 
@@ -457,14 +470,12 @@
                 return persoonMatch && datumMatch && zoekMatch && tijdMatch;
             });
 
-            // Aantallen
             const aantallen = {};
             gefilterd.forEach(b => aantallen[b.persoon] = (aantallen[b.persoon] || 0) + 1);
             document.getElementById('aantalBerichtenLijst').innerHTML = Object.entries(aantallen)
                 .sort((a,b) => b[1] - a[1])
                 .map(([p, count]) => `<div style="font-family: sans-serif; font-size: 0.85rem; margin-bottom: 4px;">• ${p}: <b>${count}</b></div>`).join('') || '(Geen data)';
 
-            // Berichten
             const resContainer = document.getElementById('resultatenLijst');
             const teTonen = modus === 'stemmen' ? gefilterd.filter(b => b.is_stem) : gefilterd;
             
@@ -475,8 +486,8 @@
             `).join('') || '(Geen resultaten)';
         }
 
-        function renderActiefSpel() {
-            const tbody = document.getElementById('actiefSpelTabel');
+        function renderSpelerLijst() {
+            const tbody = document.getElementById('spelerLijstTabel');
             const keys = Object.keys(spelersStatus);
 
             if (keys.length === 0) {
@@ -504,7 +515,6 @@
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        // Starten bij pagina-load
         initCourantDirectory();
         initChat();
     </script>
