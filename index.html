@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wakkerdam - Het Dorp</title>
+    <title>Wakkerdam Archief</title>
     <style>
         :root {
             --bg-dark: #0a0c10;
@@ -23,7 +23,7 @@
             margin: 0;
             padding: 0;
             height: 100vh;
-            overflow: hidden; /* Voorkomt scrollen op de hoofdpagina */
+            overflow: hidden;
         }
 
         .overlay {
@@ -48,7 +48,6 @@
             letter-spacing: 3px;
             color: var(--border-gold);
             text-transform: uppercase;
-            text-shadow: 2px 2px 4px #000;
         }
 
         nav {
@@ -66,14 +65,12 @@
             font-family: inherit;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s ease;
             border-radius: 4px;
         }
 
-        .tab-btn:hover, .tab-btn.active {
+        .tab-btn.active {
             background: var(--accent-red);
             color: #fff;
-            box-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
         }
 
         main {
@@ -84,6 +81,7 @@
             width: 100%;
             box-sizing: border-box;
             height: calc(100vh - 110px);
+            min-height: 0;
         }
 
         .tab-content {
@@ -92,9 +90,9 @@
             border: 1px solid rgba(201, 160, 80, 0.3);
             border-radius: 8px;
             padding: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             height: 100%;
             box-sizing: border-box;
+            min-height: 0;
         }
 
         .tab-content.active {
@@ -102,11 +100,10 @@
             flex-direction: column;
         }
 
-        /* --- COURANT TAB --- */
+        /* Courant Frame */
         .courant-controls {
             display: flex;
             gap: 15px;
-            align-items: center;
             margin-bottom: 10px;
             background: rgba(0,0,0,0.4);
             padding: 8px 15px;
@@ -132,7 +129,7 @@
             background: #fff;
         }
 
-        /* --- CHAT ANALYSE TAB --- */
+        /* Chat Layout + Gegarandeerde Scrollbar */
         .chat-controls {
             display: flex;
             gap: 10px;
@@ -146,7 +143,7 @@
             grid-template-columns: 260px 240px 1fr;
             gap: 15px;
             flex-grow: 1;
-            height: calc(100% - 45px);
+            min-height: 0; /* Essentieel voor flexchild scrolling */
         }
 
         .panel {
@@ -156,6 +153,7 @@
             padding: 12px;
             display: flex;
             flex-direction: column;
+            min-height: 0;
             height: 100%;
             box-sizing: border-box;
         }
@@ -169,21 +167,15 @@
             flex-shrink: 0;
         }
 
-        /* Verplichte Scrollbalken voor Chat panels */
         .scrollable-panel {
             overflow-y: auto;
             flex-grow: 1;
             padding-right: 5px;
+            min-height: 0;
         }
 
-        /* Styling van de scrollbalk */
-        .scrollable-panel::-webkit-scrollbar {
-            width: 6px;
-        }
-        .scrollable-panel::-webkit-scrollbar-thumb {
-            background: var(--border-gold);
-            border-radius: 3px;
-        }
+        .scrollable-panel::-webkit-scrollbar { width: 6px; }
+        .scrollable-panel::-webkit-scrollbar-thumb { background: var(--border-gold); border-radius: 3px; }
 
         .msg-item {
             background: #1a1e24;
@@ -198,42 +190,20 @@
 
         .stem-tag { color: #ff5555; font-weight: bold; }
 
-        /* --- ACTIEF SPEL / FORMATTING TAB --- */
-        .speler-tabel {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .speler-tabel th, .speler-tabel td {
-            padding: 8px 12px;
-            text-align: left;
-            border-bottom: 1px solid #222;
-        }
-
-        .speler-tabel th {
-            color: var(--border-gold);
-            border-bottom: 2px solid var(--border-gold);
-        }
-
-        .status-levend {
-            color: var(--accent-green);
-            font-weight: bold;
-        }
-
-        .status-dood {
-            color: var(--accent-red);
-            font-weight: bold;
-            text-decoration: line-through;
-        }
+        /* Spelers Tabel */
+        .speler-tabel { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .speler-tabel th, .speler-tabel td { padding: 8px; text-align: left; border-bottom: 1px solid #222; font-size: 0.85rem; }
+        .speler-tabel th { color: var(--border-gold); }
+        .status-levend { color: var(--accent-green); font-weight: bold; }
+        .status-dood { color: var(--accent-red); font-weight: bold; }
 
         .btn-small {
-            padding: 3px 8px;
+            padding: 4px 8px;
             font-size: 0.75rem;
             cursor: pointer;
-            background: #222;
-            color: #fff;
-            border: 1px solid #555;
+            background: #1a1e24;
+            color: var(--border-gold);
+            border: 1px solid var(--border-gold);
             border-radius: 3px;
         }
     </style>
@@ -245,36 +215,33 @@
             <nav>
                 <button class="tab-btn active" onclick="openTab('courant')">Dagelijkse Courant</button>
                 <button class="tab-btn" onclick="openTab('chat')">Chatgegevens</button>
-                <button class="tab-btn" onclick="openTab('actief')">Actief Spel & Formatting</button>
-                <button class="tab-btn" onclick="openTab('spel')">Spelgegevens</button>
+                <button class="tab-btn" onclick="openTab('actief')">Actief Spel & Rollen</button>
             </nav>
         </header>
 
         <main>
-            <!-- TAB 1: DAGELIJKSE COURANT -->
+            <!-- COURANT -->
             <section id="courant" class="tab-content active">
                 <div class="courant-controls">
                     <label for="courantSelect">Selecteer editie:</label>
                     <select id="courantSelect" onchange="laadCourant(this.value)">
-                        <option>Scannen naar couranten...</option>
+                        <option>Scannen...</option>
                     </select>
                 </div>
                 <iframe id="courantViewer" class="courant-frame" src=""></iframe>
             </section>
 
-            <!-- TAB 2: CHATGEGEVENS -->
+            <!-- CHATGEGEVENS -->
             <section id="chat" class="tab-content">
                 <div class="chat-controls">
                     <select id="modusSelect" onchange="renderChatData()">
                         <option value="stemmen">Alle Stemmen</option>
                         <option value="berichten">Alle Berichten</option>
                     </select>
-                    <input type="text" id="zoekBalk" placeholder="Zoek in berichten..." oninput="renderChatData()">
-                    <select id="datumSelect" onchange="renderChatData()">
-                        <option value="alle">Alle Dagen</option>
-                    </select>
-                    <button class="btn-small" onclick="selecteerAlleenLevend()">Selecteer Alleen Levend</button>
-                    <span id="chatStatus" style="margin-left: auto; color: #8b949e; font-size: 0.85rem;">Laden...</span>
+                    <input type="text" id="zoekBalk" placeholder="Zoek bericht..." oninput="renderChatData()">
+                    <select id="datumSelect" onchange="renderChatData()"><option value="alle">Alle Dagen</option></select>
+                    <button class="btn-small" onclick="selecteerAlleenLevend()">Alleen Levend</button>
+                    <span id="chatStatus" style="margin-left: auto; color: #8b949e; font-size: 0.8rem;">Laden...</span>
                 </div>
 
                 <div class="chat-grid">
@@ -293,106 +260,94 @@
                 </div>
             </section>
 
-            <!-- TAB 3: ACTIEF SPEL & FORMATTING -->
+            <!-- ACTIEF SPEL & ROLLEN -->
             <section id="actief" class="tab-content">
-                <h2 style="margin-top:0; color: var(--border-gold);">Actief Spel - Spelerslijst</h2>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Beheer hier de status van de spelers. Dit synchroniseert direct met de chatanalyse.</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                    <h2 style="margin:0; color: var(--border-gold);">Actief Spel & Backend Status</h2>
+                    <button class="btn-small" onclick="exporteerStatusJSON()" style="background: var(--accent-red); color:#fff;">Exporteer Status JSON</button>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; flex-shrink:0;">Pas rollen/status aan en exporteer naar <code>spelers_status.json</code> in GitHub.</p>
                 
-                <div class="scrollable-panel" style="max-height: 100%;">
+                <div class="scrollable-panel">
                     <table class="speler-tabel">
                         <thead>
                             <tr>
-                                <th>Spelernaam</th>
+                                <th>Speler</th>
                                 <th>Status</th>
-                                <th>Actie</th>
+                                <th>Rol</th>
+                                <th>Rol Onthuld?</th>
+                                <th>Acties</th>
                             </tr>
                         </thead>
-                        <tbody id="spelerTabelBody">
-                            <!-- Dynamisch gevuld -->
-                        </tbody>
+                        <tbody id="spelerTabelBody"></tbody>
                     </table>
                 </div>
-            </section>
-
-            <!-- TAB 4: SPELGEGEVENS -->
-            <section id="spel" class="tab-content">
-                <h2 style="margin-top:0; color: var(--border-gold);">Spelstatistieken</h2>
-                <p style="color: var(--text-muted);">Overzicht van historische spelgegevens en uitkomsten.</p>
             </section>
         </main>
     </div>
 
     <script>
-        // --- SPELERS STATUS (Gekoppeld aan Actief Spel) ---
-        let spelersStatus = {}; // { "Naam": "levend" | "dood" }
+        let naamMappings = {};
+        let spelersStatus = {};
+        let globalChatData = { berichten: [], personen: [], datums: [] };
 
-        // --- TAB ROUTING ---
         function openTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
         }
 
-        // --- COURANT AUTOMATISCHE SCANNER ---
+        // --- COURANT SCANNER ---
         async function initCourantDirectory() {
             const select = document.getElementById('courantSelect');
-            select.innerHTML = '<option>Scannen naar couranten...</option>';
-
-            const gevondenCouranten = [];
-            const maxSpellen = 25;
-            const maxEdities = 10;
+            select.innerHTML = '<option>Scannen...</option>';
+            const gevonden = [];
             const scanBeloftes = [];
 
-            for (let spel = 1; spel <= maxSpellen; spel++) {
-                for (let editie = 1; editie <= maxEdities; editie++) {
+            for (let spel = 1; spel <= 25; spel++) {
+                for (let editie = 1; editie <= 10; editie++) {
                     const fileName = `Courant_${spel}.${editie}.html`;
-                    const filePath = `couranten/${fileName}`;
-
-                    const check = fetch(filePath, { method: 'HEAD' })
-                        .then(response => {
-                            if (response.ok) {
-                                gevondenCouranten.push({ spel, editie, file: fileName });
-                            }
-                        })
+                    const check = fetch(`couranten/${fileName}`, { method: 'HEAD' })
+                        .then(res => { if (res.ok) gevonden.push({ spel, editie, file: fileName }); })
                         .catch(() => {});
-
                     scanBeloftes.push(check);
                 }
             }
 
             await Promise.all(scanBeloftes);
             select.innerHTML = '';
+            if (gevonden.length === 0) return select.innerHTML = '<option>Geen couranten</option>';
 
-            if (gevondenCouranten.length === 0) {
-                select.innerHTML = '<option>Geen couranten gevonden</option>';
-                return;
-            }
-
-            gevondenCouranten.sort((a, b) => (b.spel - a.spel) || (b.editie - a.editie));
-
-            gevondenCouranten.forEach(item => {
+            gevonden.sort((a, b) => (b.spel - a.spel) || (b.editie - a.editie));
+            gevonden.forEach(item => {
                 const opt = document.createElement('option');
                 opt.value = item.file;
-                // Filenaam is hier NIET zichtbaar, alleen Spel en Editie:
                 opt.innerText = `Spel ${item.spel} - Editie ${item.editie}`;
                 select.appendChild(opt);
             });
-
-            laadCourant(gevondenCouranten[0].file);
+            laadCourant(gevonden[0].file);
         }
 
-        function laadCourant(fileName) {
-            if (fileName) {
-                document.getElementById('courantViewer').src = `couranten/${fileName}`;
-            }
+        function laadCourant(file) {
+            if (file) document.getElementById('courantViewer').src = `couranten/${file}`;
         }
 
-        // --- CHAT ANALYSER & ACTIEF SPEL ---
-        let globalChatData = { berichten: [], personen: [], datums: [] };
+        // --- BACKEND JSON & CHAT DATA ---
+        async function initData() {
+            // 1. Laad Naam Mappings
+            try {
+                const mapRes = await fetch('naam_mappings.json');
+                if (mapRes.ok) naamMappings = await mapRes.json();
+            } catch(e) {}
 
-        async function initChat() {
+            // 2. Laad Spelers Status
+            try {
+                const statusRes = await fetch('spelers_status.json');
+                if (statusRes.ok) spelersStatus = await statusRes.json();
+            } catch(e) {}
+
+            // 3. Laad Chat Log
             try {
                 const chatRes = await fetch('_chat.txt');
                 if (!chatRes.ok) throw new Error("_chat.txt niet gevonden");
@@ -418,7 +373,12 @@
 
                 if (match) {
                     if (huidigBericht) berichten.push(huidigBericht);
-                    const datum = match[1], tijd = match[2], persoon = match[3].replace('~', '').trim();
+                    const datum = match[1], tijd = match[2];
+                    let ruweNaam = match[3].replace('~', '').trim();
+                    
+                    // Vertaal naam via naam_mappings.json
+                    const persoon = naamMappings[ruweNaam] || ruweNaam;
+
                     if (negeer.some(s => schoon.includes(s))) { huidigBericht = null; return; }
                     const tekst = schoon.substring(match[0].length).trim();
 
@@ -431,10 +391,12 @@
             if (huidigBericht) berichten.push(huidigBericht);
 
             const personen = Array.from(personenSet).sort();
-            
-            // Standaard staat iedereen op 'levend' als ze nog niet bestaan
+
+            // Initieer lege status objecten als speler nog niet in spelers_status.json staat
             personen.forEach(p => {
-                if (!spelersStatus[p]) spelersStatus[p] = "levend";
+                if (!spelersStatus[p]) {
+                    spelersStatus[p] = { status: "levend", rol: "Onbekend", onthuld: false };
+                }
             });
 
             berichten.forEach(b => {
@@ -444,7 +406,6 @@
 
             globalChatData = { berichten, personen, datums: Array.from(datumsSet) };
             
-            // Vul datum opties
             const datumSelect = document.getElementById('datumSelect');
             datumSelect.innerHTML = '<option value="alle">Alle Dagen</option>';
             globalChatData.datums.forEach(d => datumSelect.innerHTML += `<option value="${d}">${d}</option>`);
@@ -455,15 +416,17 @@
         }
 
         function renderPersonenLijst() {
-            const personenContainer = document.getElementById('personenLijst');
+            const container = document.getElementById('personenLijst');
             document.getElementById('ledenAantal').innerText = globalChatData.personen.length;
             
-            personenContainer.innerHTML = globalChatData.personen.map(p => {
-                const isDood = spelersStatus[p] === "dood";
+            container.innerHTML = globalChatData.personen.map(p => {
+                const st = spelersStatus[p] || {};
+                const isDood = st.status === "dood";
+                const rolTekst = st.onthuld ? ` [${st.rol}]` : '';
                 return `
-                <label style="display:block; margin-bottom: 6px; font-size: 0.85rem; ${isDood ? 'opacity: 0.5; text-decoration: line-through;' : ''}">
+                <label style="display:block; margin-bottom:6px; font-size:0.85rem; ${isDood ? 'opacity:0.5; text-decoration:line-through;' : ''}">
                     <input type="checkbox" value="${p}" checked onchange="renderChatData()" class="persoon-check" data-naam="${p}"> 
-                    ${p} ${isDood ? '(Dood)' : ''}
+                    ${p}${rolTekst} ${isDood ? '(Dood)' : ''}
                 </label>`;
             }).join('');
         }
@@ -471,22 +434,44 @@
         function renderSpelersTabel() {
             const tbody = document.getElementById('spelerTabelBody');
             tbody.innerHTML = globalChatData.personen.map(p => {
-                const isLevend = spelersStatus[p] === "levend";
+                const st = spelersStatus[p] || { status: 'levend', rol: 'Onbekend', onthuld: false };
+                const isLevend = st.status === "levend";
+
                 return `
                 <tr>
                     <td><b>${p}</b></td>
-                    <td class="${isLevend ? 'status-levend' : 'status-dood'}">${isLevend ? 'Levend' : 'Dood'}</td>
+                    <td class="${isLevend ? 'status-levend' : 'status-dood'}">${st.status.toUpperCase()}</td>
+                    <td>
+                        <input type="text" value="${st.rol}" style="width:100px;" onchange="updateRol('${p}', this.value)">
+                    </td>
+                    <td>
+                        <input type="checkbox" ${st.onthuld ? 'checked' : ''} onchange="updateOnthuld('${p}', this.checked)"> Onthuld
+                    </td>
                     <td>
                         <button class="btn-small" onclick="wisselStatus('${p}')">
-                            Markeer als ${isLevend ? 'Dood' : 'Levend'}
+                            Markeer ${isLevend ? 'Dood' : 'Levend'}
                         </button>
                     </td>
                 </tr>`;
             }).join('');
         }
 
-        function wisselStatus(naam) {
-            spelersStatus[naam] = spelersStatus[naam] === "levend" ? "dood" : "levend";
+        function wisselStatus(p) {
+            spelersStatus[p].status = spelersStatus[p].status === "levend" ? "dood" : "levend";
+            herlaadInterface();
+        }
+
+        function updateRol(p, rol) {
+            spelersStatus[p].rol = rol;
+            herlaadInterface();
+        }
+
+        function updateOnthuld(p, onthuld) {
+            spelersStatus[p].onthuld = onthuld;
+            herlaadInterface();
+        }
+
+        function herlaadInterface() {
             renderSpelersTabel();
             renderPersonenLijst();
             renderChatData();
@@ -495,7 +480,7 @@
         function selecteerAlleenLevend() {
             document.querySelectorAll('.persoon-check').forEach(cb => {
                 const naam = cb.getAttribute('data-naam');
-                cb.checked = (spelersStatus[naam] === "levend");
+                cb.checked = (spelersStatus[naam]?.status === "levend");
             });
             renderChatData();
         }
@@ -530,9 +515,19 @@
             `).join('') || '<small>(Geen resultaten)</small>';
         }
 
-        // Starten bij pagina-load
+        // Exporteer knop om spelers_status.json direct te kopiëren/downloaden
+        function exporteerStatusJSON() {
+            const jsonStr = JSON.stringify(spelersStatus, null, 2);
+            const blob = new Blob([jsonStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "spelers_status.json";
+            a.click();
+        }
+
         initCourantDirectory();
-        initChat();
+        initData();
     </script>
 </body>
 </html>
