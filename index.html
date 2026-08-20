@@ -11,7 +11,6 @@
             --border-color: #333;
             --text-color: #e0e0e0;
             --accent-color: #3b82f6;
-            --accent-hover: #2563eb;
             --status-levend: #4ade80;
             --status-dood: #f87171;
             --stem-bg: #282318;
@@ -255,27 +254,23 @@
 
 <script>
     let naamMappings = {};
-    let spelersStatusRaw = {};
     let spelersStatus = {};
     let rawChatText = "";
     let globalChatData = { berichten: [], personen: [], datums: [] };
 
-    // File input event listeners
     document.getElementById('mappingFileInput').addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (file) {
-            const text = await file.text();
-            naamMappings = JSON.parse(text);
-            updateAlles();
+            naamMappings = JSON.parse(await file.text());
+            herlaad();
         }
     });
 
     document.getElementById('statusFileInput').addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (file) {
-            const text = await file.text();
-            spelersStatusRaw = JSON.parse(text);
-            updateAlles();
+            spelersStatus = JSON.parse(await file.text());
+            herlaad();
         }
     });
 
@@ -283,22 +278,11 @@
         const file = e.target.files[0];
         if (file) {
             rawChatText = await file.text();
-            updateAlles();
+            herlaad();
         }
     });
 
-    // Herbereken en verwerk status keys via de mapping
-    function verwerkSpelersStatus() {
-        spelersStatus = {};
-        for (const [ruweNaam, data] of Object.entries(spelersStatusRaw)) {
-            // Vertaal de ruwe sleutel uit spelers_status.json naar de opgeschoonde naam via naam_mappings.json
-            const schoneNaam = naamMappings[ruweNaam] || ruweNaam;
-            spelersStatus[schoneNaam] = data;
-        }
-    }
-
-    function updateAlles() {
-        verwerkSpelersStatus();
+    function herlaad() {
         if (rawChatText) {
             verwerkChatInBrowser(rawChatText);
         } else {
@@ -322,7 +306,7 @@
                 const datum = match[1], tijd = match[2];
                 const ruweNaam = match[3].replace('~', '').trim();
                 
-                // Omzetten van ruwe WhatsApp-afzender naar schone weergavenaam
+                // Vertaal naam direct via naam_mappings.json
                 const persoon = naamMappings[ruweNaam] || ruweNaam;
 
                 if (negeer.some(s => schoon.includes(s))) { huidigBericht = null; return; }
@@ -337,13 +321,6 @@
         if (huidigBericht) berichten.push(huidigBericht);
 
         const personen = Array.from(personenSet).sort();
-
-        // Als een speler uit de chat niet in spelers_status staat, toevoegen met default status
-        personen.forEach(p => {
-            if (!spelersStatus[p]) {
-                spelersStatus[p] = { status: "levend", rol: "Onbekend" };
-            }
-        });
 
         berichten.forEach(b => {
             const t = b.tekst.toLowerCase();
@@ -370,15 +347,17 @@
             return;
         }
         
-        tbody.innerHTML = keys.map(p => {
-            const st = spelersStatus[p] || {};
+        tbody.innerHTML = keys.map(k => {
+            const st = spelersStatus[k] || {};
+            // Vertaal de sleutel uit spelers_status.json indien aanwezig in naam_mappings.json
+            const weergaveNaam = naamMappings[k] || k;
             const rawStatus = (st.status || 'levend').toLowerCase();
             const isLevend = rawStatus === "levend";
             const rolTekst = (st.rol && st.rol.trim() !== "") ? st.rol : "Onbekend";
 
             return `
             <tr>
-                <td><b>${p}</b></td>
+                <td><b>${weergaveNaam}</b></td>
                 <td class="${isLevend ? 'status-levend' : 'status-dood'}">${rawStatus.toUpperCase()}</td>
                 <td>${rolTekst}</td>
             </tr>`;
@@ -398,7 +377,6 @@
     function renderChatData() {
         const container = document.getElementById('chatContainer');
         const gekozenDatum = document.getElementById('datumSelect').value;
-        
         const actievePersonen = Array.from(document.querySelectorAll('#personenLijst input:checked')).map(cb => cb.value);
 
         const gefilterdeBerichten = globalChatData.berichten.filter(b => {
