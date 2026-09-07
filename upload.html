@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Upload - GitHub Pages</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="overlay">
+        <main style="max-width: 450px; margin: 50px auto;">
+            <section class="page-content">
+                <h2>Admin Login</h2>
+                <div id="loginSection">
+                    <input type="text" id="username" placeholder="Gebruikersnaam" style="width:100%; margin-bottom:10px;"><br>
+                    <input type="password" id="password" placeholder="Wachtwoord" style="width:100%; margin-bottom:10px;"><br>
+                    <button onclick="verifieerWachtwoord()" class="nav-btn">Inloggen</button>
+                </div>
+
+                <div id="uploadSection" style="display:none; margin-top:20px;">
+                    <h3>Upload _chat.txt naar GitHub</h3>
+                    <input type="file" id="chatFile" accept=".txt" style="margin-bottom:10px;"><br>
+                    <button onclick="uploadNaarGithub()" class="nav-btn">Verstuur & Commit</button>
+                </div>
+
+                <p id="statusMsg" style="margin-top: 15px;"></p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // SHA-256 hash van jouw gekozen wachtwoord (voorbeeld is de hash van 'Geheim123!')
+        const EXPECTED_HASH = "7f082e0574f885e3ee41a33a39e8027725946f059286d9124be35411626359be"; 
+        
+        let ingelogdeGebruiker = "";
+
+        // Eenzijdige SHA-256 hashfunctie
+        async function hashString(str) {
+            const buffer = new TextEncoder().encode(str);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function verifieerWachtwoord() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value;
+            const status = document.getElementById('statusMsg');
+
+            if (!user || !pass) {
+                status.innerText = "Vul alle velden in.";
+                status.style.color = "red";
+                return;
+            }
+
+            const inputHash = await hashString(pass);
+
+            if (inputHash === EXPECTED_HASH) {
+                ingelogdeGebruiker = user;
+                document.getElementById('loginSection').style.display = "none";
+                document.getElementById('uploadSection').style.display = "block";
+                status.innerText = `Welkom ${user}! Kies je bestand.`;
+                status.style.color = "green";
+                
+                logActie(user, "LOGIN", "SUCCES");
+            } else {
+                status.innerText = "Ongeldig wachtwoord!";
+                status.style.color = "red";
+                
+                logActie(user, "LOGIN_POGING", "MISLUKT");
+            }
+        }
+
+        // Simpele logging via Webhook (bijv. Discord Webhook URL) of LocalStorage
+        function logActie(gebruiker, actie, resultaat) {
+            const logEntry = `[${new Date().toLocaleString()}] Gebruiker: ${gebruiker} | Actie: ${actie} | Status: ${resultaat}`;
+            console.log("LOG:", logEntry);
+
+            // Optioneel: stuur de log door naar een Discord channel via Webhook
+            /*
+            fetch('JOUW_DISCORD_WEBHOOK_URL', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: logEntry })
+            });
+            */
+        }
+
+        // Bestand opslaan/committen via GitHub API
+        async function uploadNaarGithub() {
+            const fileInput = document.getElementById('chatFile');
+            const status = document.getElementById('statusMsg');
+            
+            if (!fileInput.files[0]) {
+                status.innerText = "Selecteer eerst een bestand.";
+                status.style.color = "red";
+                return;
+            }
+
+            // GitHub instellingen
+            const GITHUB_TOKEN = "JOUW_PERSONAL_ACCESS_TOKEN"; // Met 'repo' scope
+            const REPO_OWNER = "pepijnpie";
+            const REPO_NAME = "JOUW_REPO_NAAM";
+            const FILE_PATH = "_chat.txt"; 
+
+            status.innerText = "Uploaden naar GitHub...";
+            status.style.color = "orange";
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = async function(e) {
+                const contentBase64 = e.target.result.split(',')[1];
+
+                try {
+                    // 1. Haal huidige SHA van het bestand op (nodig om te kunnen overschrijven)
+                    const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+                    const getRes = await fetch(getUrl, {
+                        headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                    });
+                    
+                    let sha = "";
+                    if (getRes.ok) {
+                        const getData = await getRes.json();
+                        sha = getData.sha;
+                    }
+
+                    // 2. Push nieuwe inhoud naar GitHub
+                    const putRes = await fetch(getUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${GITHUB_TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `Update _chat.txt door ${ingelogdeGebruiker}`,
+                            content: contentBase64,
+                            sha: sha || undefined
+                        })
+                    });
+
+                    if (putRes.ok) {
+                        status.innerText = "Bestand succesvol geüpload naar GitHub!";
+                        status.style.color = "green";
+                        logActie(ingelogdeGebruiker, "UPLOAD_CHAT", "SUCCES");
+                    } else {
+                        throw new Error("GitHub API foutmelding");
+                    }
+                } catch (err) {
+                    status.innerText = "Fout bij uploaden naar GitHub.";
+                    status.style.color = "red";
+                    logActie(ingelogdeGebruiker, "UPLOAD_CHAT", `FOUT: ${err.message}`);
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
