@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wakkerdam - Spelerlijst</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="overlay">
+        <header>
+            <h1>Wakkerdam Archief</h1>
+            <nav>
+                <a href="couranten.html" class="nav-btn">Dagelijkse Courant</a>
+                <a href="index.html" class="nav-btn">Chatgegevens</a>
+                <a href="spelers.html" class="nav-btn active">Spelerlijst</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="page-content">
+                <h2>Spelerlijst</h2>
+                <p style="color: var(--text-muted);">Status van alle deelnemers (Live synchronisatie vanuit het spelverloop).</p>
+                <table class="status-table">
+                    <thead>
+                        <tr>
+                            <th>Speler</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spelerLijstTabel">
+                        <tr><td colspan="2" style="color: var(--text-muted);">Laden vanuit GitHub Pages...</td></tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script src="spelers.js"></script>
+</body>
+</html>
