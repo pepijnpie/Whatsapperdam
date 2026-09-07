@@ -1,0 +1,203 @@
+:root {
+    --bg-dark: #0a0c10;
+    --panel-bg: rgba(22, 27, 34, 0.9);
+    --border-gold: #c9a050;
+    --text-main: #e6edf3;
+    --text-muted: #8b949e;
+    --accent-red: #8b0000;
+    --status-levend: #4ade80;
+    --status-dood: #f87171;
+}
+
+body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--bg-dark) url('https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+    background-size: cover;
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.overlay {
+    background: rgba(10, 12, 16, 0.85);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background: rgba(15, 15, 20, 0.95);
+    border-bottom: 2px solid var(--border-gold);
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    letter-spacing: 3px;
+    color: var(--border-gold);
+    text-transform: uppercase;
+    text-shadow: 2px 2px 4px #000;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    background: #1a1e24;
+    color: var(--text-main);
+    border: 1px solid var(--border-gold);
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.tab-btn:hover, .tab-btn.active {
+    background: var(--accent-red);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
+}
+
+main {
+    flex-grow: 1;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tab-content {
+    display: none;
+    background: var(--panel-bg);
+    border: 1px solid rgba(201, 160, 80, 0.3);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.courant-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+    background: rgba(0,0,0,0.4);
+    padding: 12px 18px;
+    border-radius: 6px;
+    border: 1px solid #333;
+}
+
+select, input {
+    background: #12151a;
+    color: var(--border-gold);
+    border: 1px solid var(--border-gold);
+    padding: 8px 12px;
+    font-family: inherit;
+    border-radius: 4px;
+}
+
+.courant-frame {
+    width: 100%;
+    border: 1px solid var(--border-gold);
+    border-radius: 4px;
+    background: #fff;
+    display: block;
+    overflow: hidden;
+}
+
+.chat-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.time-filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--border-gold);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 240px 200px 1fr;
+    gap: 15px;
+    height: 650px;
+}
+
+.panel {
+    background: #12151a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.panel h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.scrollable {
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 5px;
+}
+
+.msg-item {
+    background: #1a1e24;
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    border-left: 3px solid var(--border-gold);
+    white-space: pre-wrap;
+    font-family: sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.35;
+}
+
+.stem-tag { color: #ff5555; font-weight: bold; }
+
+table.status-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+table.status-table th, table.status-table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+}
+
+table.status-table th {
+    background: rgba(0,0,0,0.5);
+    color: var(--border-gold);
+}
+
+.status-levend { color: var(--status-levend); font-weight: bold; }
+.status-dood { color: var(--status-dood); font-weight: bold; }
