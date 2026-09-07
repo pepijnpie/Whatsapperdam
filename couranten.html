@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wakkerdam - Dagelijkse Courant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="overlay">
+        <header>
+            <h1>Wakkerdam Archief</h1>
+            <nav>
+                <a href="couranten.html" class="nav-btn active">Dagelijkse Courant</a>
+                <a href="index.html" class="nav-btn">Chatgegevens</a>
+                <a href="spelers.html" class="nav-btn">Spelerlijst</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="page-content">
+                <h2>De Dagelijkse Courant</h2>
+                <div class="courant-controls">
+                    <label for="courantSelect">Kies editie:</label>
+                    <select id="courantSelect" onchange="laadCourant(this.value)">
+                        <option>Scannen...</option>
+                    </select>
+                </div>
+                <iframe id="courantViewer" class="courant-frame" src="" scrolling="no" onload="adjustIframeHeight(this)"></iframe>
+            </section>
+        </main>
+    </div>
+
+    <script src="couranten.js"></script>
+</body>
+</html>
