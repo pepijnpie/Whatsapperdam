@@ -1,5 +1,7 @@
 const TARGET_URL = 'https://itsjepoan.github.io/Online-Weerwolven-van-Whatsapperdam/spelverloop.html';
-const PROXY_URL = `https://api.allorigins.win/get?url=${encodeURIComponent(TARGET_URL)}`;
+
+// Gebruik corsproxy.io (sneller en stuurt altijd de juiste Access-Control-Allow-Origin header mee)
+const PROXY_URL = `https://corsproxy.io/?${encodeURIComponent(TARGET_URL)}`;
 
 async function laadLiveSpelerLijst() {
     const tbody = document.getElementById('spelerLijstTabel');
@@ -7,11 +9,11 @@ async function laadLiveSpelerLijst() {
         const response = await fetch(PROXY_URL);
         if (!response.ok) throw new Error("Netwerkfout bij ophalen spelerlijst");
         
-        const data = await response.json();
+        // Corsproxy.io geeft direct de rauwe HTML terug in plaats van JSON!
+        const htmlText = await response.text(); 
         const parser = new DOMParser();
-        const doc = parser.parseFromString(data.contents, 'text/html');
+        const doc = parser.parseFromString(htmlText, 'text/html');
         
-        // Haal alle speler-rijen op (.current-player-row)
         const rows = doc.querySelectorAll('.current-player-row');
         
         if (rows.length === 0) {
@@ -21,11 +23,9 @@ async function laadLiveSpelerLijst() {
 
         let html = '';
         rows.forEach(row => {
-            // Haal de tekst uit class="current-player-name" en class="current-player-status"
             const naam = row.querySelector('.current-player-name')?.textContent.trim() || 'Onbekend';
             const statusTekst = row.querySelector('.current-player-status')?.textContent.trim() || 'Levend';
             
-            // Check of iemand dood is
             const isDood = statusTekst.toLowerCase() === 'dood' || row.classList.contains('dead');
 
             html += `
