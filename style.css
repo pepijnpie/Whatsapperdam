@@ -51,19 +51,20 @@ nav {
     flex-wrap: wrap;
 }
 
-.tab-btn {
+.nav-btn {
     background: #1a1e24;
     color: var(--text-main);
     border: 1px solid var(--border-gold);
     padding: 10px 20px;
     font-family: inherit;
     font-size: 0.95rem;
-    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
     transition: all 0.3s ease;
     border-radius: 4px;
 }
 
-.tab-btn:hover, .tab-btn.active {
+.nav-btn:hover, .nav-btn.active {
     background: var(--accent-red);
     color: #fff;
     box-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
@@ -78,17 +79,12 @@ main {
     box-sizing: border-box;
 }
 
-.tab-content {
-    display: none;
+.page-content {
     background: var(--panel-bg);
     border: 1px solid rgba(201, 160, 80, 0.3);
     border-radius: 8px;
     padding: 25px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.tab-content.active {
-    display: block;
 }
 
 .courant-controls {
