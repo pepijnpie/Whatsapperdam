@@ -25,7 +25,9 @@
                         <option value="berichten" selected>Alle Berichten</option>
                         <option value="stemmen">Alle Stemmen</option>
                     </select>
+                    
                     <input type="text" id="zoekBalk" placeholder="Zoek in berichten..." oninput="renderChatData()">
+                    
                     <select id="datumSelect" onchange="renderChatData()">
                         <option value="alle">Alle Dagen</option>
                     </select>
@@ -36,6 +38,15 @@
                         <label>Tot:</label>
                         <input type="time" id="tijdTot" value="23:59" onchange="renderChatData()">
                     </div>
+
+                    <!-- Knop voor lokale bestandsupload -->
+                    <label class="nav-btn" style="cursor: pointer; padding: 6px 12px; font-size: 0.85rem;">
+                        Upload eigen _chat.txt
+                        <input type="file" id="localChatInput" accept=".txt" style="display: none;" onchange="handleLocalFileUpload(event)">
+                    </label>
+
+                    <!-- Optionele knop om lokaal bestand te wissen -->
+                    <button class="nav-btn" onclick="resetNaarStandaardChat()" style="padding: 6px 10px; font-size: 0.8rem; background: #333;" title="Herstel naar het standaardbestand op de server">Reset</button>
 
                     <span id="chatStatus" style="margin-left: auto; color: var(--text-muted);">Laden...</span>
                 </div>
