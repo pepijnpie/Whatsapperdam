@@ -3,21 +3,58 @@ let globalChatData = { berichten: [], personen: [], datums: [] };
 
 async function initChat() {
     try {
-        const [chatRes, mappingRes] = await Promise.all([
-            fetch('_chat.txt'),
-            fetch('naam_mappings.json').catch(() => null)
-        ]);
-
+        const mappingRes = await fetch('naam_mappings.json').catch(() => null);
         if (mappingRes && mappingRes.ok) naamMappings = await mappingRes.json();
 
-        if (!chatRes.ok) throw new Error("_chat.txt niet gevonden");
+        // Check of de gebruiker eerder al een eigen bestand lokaal heeft geüpload
+        const lokaalOpgeslagenChat = localStorage.getItem('custom_chat_data');
+
+        if (lokaalOpgeslagenChat) {
+            verwerkChatInBrowser(lokaalOpgeslagenChat);
+            document.getElementById('chatStatus').innerText = "Actief: Lokaal geladen bestand";
+            document.getElementById('chatStatus').style.color = "var(--status-levend)";
+            return;
+        }
+
+        // Anders standaard _chat.txt van de server ophalen
+        const chatRes = await fetch('_chat.txt');
+        if (!chatRes.ok) throw new Error("_chat.txt niet gevonden op server");
+        
         const chatText = await chatRes.text();
         verwerkChatInBrowser(chatText);
-        document.getElementById('chatStatus').innerText = "Actief: _chat.txt";
+        document.getElementById('chatStatus').innerText = "Actief: Standaard _chat.txt";
     } catch (err) {
         document.getElementById('chatStatus').innerText = err.message;
         document.getElementById('chatStatus').style.color = "red";
     }
+}
+
+// Handler voor het lokaal uploaden via de browser
+function handleLocalFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const chatContent = e.target.result;
+        
+        // Sla lokaal op in de browser van deze client (blijft bewaard na vernieuwen)
+        localStorage.setItem('custom_chat_data', chatContent);
+        
+        // Verwerk direct op het scherm
+        verwerkChatInBrowser(chatContent);
+        
+        document.getElementById('chatStatus').innerText = `Actief: ${file.name} (Lokaal)`;
+        document.getElementById('chatStatus').style.color = "var(--status-levend)";
+    };
+
+    reader.readAsText(file);
+}
+
+// Optioneel: Functie om terug te keren naar de standaard server-chat
+function resetNaarStandaardChat() {
+    localStorage.removeItem('custom_chat_data');
+    location.reload();
 }
 
 function verwerkChatInBrowser(rawText) {
@@ -86,8 +123,8 @@ function renderChatData() {
     const modus = document.getElementById('modusSelect').value;
     const zoekterm = document.getElementById('zoekBalk').value.toLowerCase();
     const gekozenDatum = document.getElementById('datumSelect').value;
-    const tijdVan = document.getElementById('tijdVan').value || "00:00";
-    const tijdTot = document.getElementById('tijdTot').value || "23:59";
+    const tijdVan = document.getElementById('tijdVan')?.value || "00:00";
+    const tijdTot = document.getElementById('tijdTot')?.value || "23:59";
 
     const gecheckt = Array.from(document.querySelectorAll('.persoon-check:checked')).map(c => c.value);
 
